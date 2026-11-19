@@ -1,0 +1,96 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      rid:
+        description: RID to build (all = full matrix)
+        type: choice
+        default: all
+        options: [all, win-x64, linux-x64, linux-arm64, osx-arm64, osx-x64]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      include: ${{ steps.pick.outputs.include }}
+    steps:
+      - id: pick
+        env:
+          RID: ${{ inputs.rid || 'all' }}
+        run: |
+          # Native AOT doesn't cross-compile between OSes: each RID builds on its own OS.
+          # linux on 22.04: the binary needs the build host's glibc or newer.
+          # osx-x64 is built cross-arch on Apple Silicon; its code is tested on osx-arm64.
+          all='[
+            {"rid":"win-x64",     "os":"windows-latest",   "test":true},
+            {"rid":"linux-x64",   "os":"ubuntu-22.04",     "test":true},
+            {"rid":"linux-arm64", "os":"ubuntu-22.04-arm", "test":true},
+            {"rid":"osx-arm64",   "os":"macos-latest",     "test":true},
+            {"rid":"osx-x64",     "os":"macos-latest",     "test":false}
+          ]'
+          echo "include=$(jq -c --arg r "$RID" 'map(select($r == "all" or .rid == $r))' <<<"$all")" >> "$GITHUB_OUTPUT"
+
+  check:
+    needs: matrix
+    name: check (${{ matrix.rid }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.matrix.outputs.include) }}
+    env:
+      BIN: artifacts/publish/${{ matrix.rid }}/knit${{ startsWith(matrix.rid, 'win') && '.exe' || '' }}
+    steps:
+      # Actions are pinned to a full commit SHA: a tag can be moved to other code, a SHA can't.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # MinVer reads the version from tags
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          global-json-file: global.json
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: src/Knit.Web/package-lock.json
+
+      - name: AOT prerequisites
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
+
+      - name: Test
+        if: matrix.test
+        run: dotnet test -c Release
+
+      - name: Publish
+        run: dotnet publish src/Knit.Cli/Knit.Cli.csproj -c Release -r ${{ matrix.rid }} -o artifacts/publish/${{ matrix.rid }}
+
+      - name: Smoke
+        shell: bash
+        run: '"$BIN" version'
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: knit-${{ matrix.rid }}
+          path: ${{ env.BIN }}
+          if-no-files-found: error
+          retention-days: 7

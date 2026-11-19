@@ -63,8 +63,8 @@ from a local machine.
   `dotnet publish src/Knit.Cli/Knit.Cli.csproj -c Release -r <rid>`, so a local
   publish is the same build. Already set there: `PublishAot` (implies full
   trimming), `IlcTreatWarningsAsErrors`, `InvariantGlobalization`,
-  `StripSymbols`. Add `OptimizationPreference=Speed` — AOT already gives
-  JIT-free startup; this trades some size for faster code.
+  `StripSymbols`. `OptimizationPreference` stays at the default — a CLI's
+  runtime is I/O and parsing, so `Speed` would cost size for no measurable gain.
 - **Runner needs:** Node on every runner (`BuildSpa` runs `npm ci` + Vite);
   checkout with `fetch-depth: 0` for MinVer. The AOT publish is what enforces
   `IlcTreatWarningsAsErrors`, incl. warnings from dependencies.
@@ -82,6 +82,8 @@ from a local machine.
     patch; any feature or behaviour change → minor.
 - **A `release` skill** owns the flow: changelog, version recommendation, tag.
 - **`CHANGELOG.md`** per Keep a Changelog, starting with the first release.
+  CLAUDE.md names it and the `release` skill, replacing the "remind to tag after
+  a version bump" note.
 - Every pipeline output goes to one gitignored `artifacts/` folder.
 - **Repo rules once the check job is green** (rulesets; `main` already blocks
   force pushes and deletion):
@@ -333,3 +335,98 @@ and floods the recent rows.
 - **Acceptance:** after a fresh clone the recent rows order by commit date; a
   locally edited file shows its mtime; with git off PATH everything still
   renders from mtime.
+
+---
+
+## Quote refs: point an agent at selected text
+
+Select text in a rendered doc (item, KB, design, project doc), copy a ref to
+it, paste it into an agent chat ("discuss this"). The section link's
+counterpart for a passage. Pasted into the jump box, it opens the doc and
+highlights the passage.
+
+Not a link format for stored text: a quote ref lives as long as the chat, so
+it is never written into a doc, never checked by `knit verify`, and nothing
+needs to keep it valid.
+
+### Format
+
+```text
+kb:doc/auth#limits "⟦tokens expire after 1 h⟧"
+kb:doc/auth#limits "retry after ⟦5⟧ seconds, then"
+item:<id>#matrix "bob dev ⟦yes⟧" (column "Admin")
+```
+
+- **The section ref, unchanged, then the quote** — the same `<ref>#<anchor>`
+  the heading button copies, so an agent reads the section with
+  `knit ref show` and finds the passage in it.
+- **`⟦…⟧` marks the selection, always present**; text around it is context.
+  Never in real text, so no escaping, and it tells a quote ref apart from the
+  cited form `` `item:<id>` "Title" ``.
+- **No `>` separator:** an agent pasting the ref into a shell command would
+  redirect into a file. Here a pasted quote only adds stray arguments, which
+  the CLI rejects.
+- **The quote is the rendered text** the user saw, whitespace collapsed to
+  single spaces, on one line — inputs drop newlines on paste. Not raw
+  markdown: the highlight matches rendered text, and the agent reads the
+  section anyway.
+- **Scope = the section's span** (heading plus subsections, as `knit ref
+  show` prints it): the deepest h2/h3 whose span holds the whole selection.
+  None (above the first heading, or across two h2s) → the ref without an
+  anchor, scope the whole doc.
+- **Long selection** (over ~120 characters): `⟦first words … last words⟧`;
+  matched as the start, then the nearest end after it.
+- **Rejected:** URL text fragments (`#:~:text=`) — browsers strip them from
+  `location.hash`, the SPA would need a second URL form, and percent-encoding
+  is unreadable in chat; `path:line` ranges — the SPA renders without source
+  positions, lines drift during the discussion, and a list or table is one
+  token, so the range is coarse.
+
+### Uniqueness — never take the first match
+
+- **At copy time** the SPA counts the selection in the scope. Unique → bare
+  `⟦…⟧`. Not unique → add a word of context on either side until it is, up
+  to ~10 words. Still ambiguous (identical table rows) → copy anyway; the
+  jump reports it.
+- **Column name:** a selection inside one table cell appends
+  `(column "<header>")` — positional context pins the cell, the header tells
+  the agent what the value means. Parse the column form first, so a `"` in
+  the quote can't swallow it.
+- **At jump time**, matches of context + selection in the scope:
+
+  | Matches | Behaviour |
+  |---|---|
+  | 1 | Highlight exactly the `⟦…⟧` part |
+  | 0 | Flash the section, toast "quoted text not found" |
+  | > 1 | Highlight every match, toast "N matches — ambiguous" |
+
+### Matching
+
+- **Whitespace-insensitive**, plus the existing case / diacritics fold:
+  quote and rendered text are compared with all whitespace removed. That is
+  what makes tables (cells separated by tabs / newlines in the selection,
+  separate text nodes in the DOM) and lists (bullets not in the selection)
+  match without per-element handling.
+- An explicit normalised-offset → text-node map turns a match back into a
+  `Range`; `searchHighlight` paints with the CSS Highlight API and relies on a
+  length-preserving fold, which whitespace removal breaks — extend it, don't
+  build a second highlighter.
+- Where the Highlight API can't paint (SVG / Mermaid text, older engines):
+  the existing region flash.
+
+### Surface
+
+- **Copy:** a floating icon button at a non-empty selection inside a rendered
+  doc body (read mode only; the editor has no rendered DOM), lucide icon with
+  `title` + `aria-label`, toast on copy.
+- **Jump box:** accepts the quote ref; the part before the quote takes the
+  existing ref path unchanged.
+- **Skill:** one sentence in the `knit` skill > Sections: what the form means
+  and that `knit ref show <ref>#<anchor>` reads the passage's section. The CLI
+  itself doesn't parse it.
+- **Acceptance:** vitest over a shared case set: a unique phrase in prose; a
+  repeated phrase gets context and resolves to the selected occurrence; a
+  table cell resolves to the selected column and carries its header; a
+  selection across list items and across table rows; text above the first
+  heading; a long selection; quote not found → section flash + toast; two
+  identical rows → all highlighted + toast.
