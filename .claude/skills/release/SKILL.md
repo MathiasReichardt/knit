@@ -19,6 +19,19 @@ A red leg publishes nothing. Nothing is published from this machine.
   its own, never part of the release commit.
 - Commit messages: no attribution lines.
 
+## Stable or prerelease
+
+Decide first, from the request and the current branch:
+
+- The user named one (`v0.12.0`, "rc", "beta") → that one.
+- Not on `main` → only a prerelease is possible (a stable release must be on
+  `main`); say so and offer `vX.Y.Z-rc.N`.
+- On `main`, nothing named → ask, recommending stable.
+
+For a prerelease, `X.Y.Z` is the next stable version (stable steps 2–4) and `N`
+is one above the highest existing `vX.Y.Z-rc.*` tag
+(`git ls-remote --tags origin "vX.Y.Z-*"`), else 1.
+
 ## Stable release
 
 1. **Preconditions** — on `main`, clean working tree, up to date:
@@ -74,7 +87,9 @@ A red leg publishes nothing. Nothing is published from this machine.
 `vX.Y.Z-rc.N` / `-beta.N` on any pushed commit, any branch; no changelog
 change, `X.Y.Z` is the version the next stable release will get.
 
-1. Tag free (stable step 5); gates (stable step 7) on that commit. A stale
+1. The commit is pushed (`git status -sb`: not ahead of its upstream) and
+   carries the release job — a branch without it tags nothing. Tag free
+   (stable step 5); gates (stable step 7) on that commit. A stale
    notices file fails the release job — regenerate it in a commit on that
    branch first, via its PR.
 2. `git tag -a vX.Y.Z-rc.N -m "vX.Y.Z-rc.N" <sha>`, push after the user
