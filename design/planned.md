@@ -26,15 +26,18 @@ from a local machine.
   - notices: `tools/gen-notices.mjs` (renamed from `gen-npm-notices.mjs`) covers
     NuGet + npm; `--check-licenses` in `Knit.Web.Tests`, `--check` ready for the
     release job; CLAUDE.md / CONTRIBUTING.md rule replaced
+  - README > Install and `INSTALL.md`: all five RIDs, the per-RID archives
 - Open:
   - ruleset: `main` requires the five `check (<rid>)` jobs (not `matrix`)
-  - release job on `v*` tags, dry-run with `v0.12.0-rc.N` tags (deleted
-    afterwards); it uploads the binaries only, no pdb / dbg / dSYM
+  - release job on `v*` tags: written (tag validation in the `matrix` job,
+    version assert in smoke, notices `--check`, changelog notes, `gh release
+    create`); dry run with `v0.12.0-rc.N` tags (deleted afterwards) not yet done
   - `release` skill, `CHANGELOG.md`, the CLAUDE.md mention
-  - README badges (CI, latest release); README > Install and `INSTALL.md`
-    list all five RIDs
+  - README badges (CI, latest release)
   - `v*` tag ruleset
   - when the entry lands: decisions to `decisions.md`, the entry deleted
+  - before `v0.12.0`: the release job's `npm audit` fails today (seroval
+    critical, zod high; both have non-major fixes) — its own PR
   - first release `v0.12.0` from `main`
 
 - **Releases come from CI only, on a `v*` tag push.** Every other push / PR runs
@@ -90,8 +93,15 @@ from a local machine.
 - **Runner needs:** Node on every runner (`BuildSpa` runs `npm ci` + Vite);
   checkout with `fetch-depth: 0` for MinVer. The AOT publish is what enforces
   `IlcTreatWarningsAsErrors`, incl. warnings from dependencies.
-- **Release assets:** one binary per RID plus `LICENSE` and
-  `THIRD-PARTY-NOTICES.md` beside them.
+- **Release assets: one archive per RID** — `knit-<rid>.tar.gz` (`knit-win-x64.zip`
+  on Windows) holding `knit` / `knit.exe`, `LICENSE` and `THIRD-PARTY-NOTICES.md`,
+  flat. The command is `knit` on every OS, and tar keeps the executable bit.
+  A `SHA256SUMS` file beside them — what `knit update self` verifies a download
+  against.
+  Version-less names, so `/releases/latest/download/<asset>` is a stable link.
+  - **Rejected:** bare binaries named `knit-<rid>` (every user renames them, and
+    a download loses the executable bit); the version in the asset name (no
+    stable latest link).
 - **Versioning via [MinVer](https://github.com/adamralph/minver)** (MIT): the
   version comes from the latest tag on every build, local or CI. Drop
   `Version` / `InformationalVersion` from `Directory.Build.props`; keep
@@ -103,7 +113,15 @@ from a local machine.
   - The tag decides the version, not MinVer: only fixes since the last tag →
     patch; any feature or behaviour change → minor.
 - **A `release` skill** owns the flow: changelog, version recommendation,
-  notices, tag.
+  notices, tag. Before tagging it runs the release job's gates locally
+  (`gen-notices.mjs --check` after regenerating, `npm audit --omit=dev
+  --audit-level=high`, `dotnet list package --vulnerable --include-transitive`),
+  so a failure shows before a tag exists.
+- **Vulnerability gates:** NuGet audit fails high / critical advisories on every
+  CI build; `npm audit` (production dependencies, high+) runs in the release job
+  only.
+  - **Rejected:** `npm audit` per PR — an advisory published overnight turns
+    every unrelated PR red; Dependabot security updates cover the in-between.
 - **`THIRD-PARTY-NOTICES.md` is regenerated per release, not per dependency
   change.** A bump (Dependabot security update, hand bump) no longer has to
   touch it, so it no longer fails `dotnet test`.

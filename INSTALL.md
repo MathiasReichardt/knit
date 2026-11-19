@@ -3,11 +3,25 @@
 One self-contained binary, no runtime to install. Take it from a release, or
 build it from source (`dotnet publish`, see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
-| Platform | RID | Binary |
+| Platform | RID | Release asset |
 |---|---|---|
-| Windows 11 x64 | `win-x64` | `knit.exe` |
-| macOS Apple Silicon | `osx-arm64` | `knit` |
-| Linux x64 | `linux-x64` | `knit` (glibc — see below) |
+| Windows x64 | `win-x64` | `knit-win-x64.zip` |
+| Linux x64 | `linux-x64` | `knit-linux-x64.tar.gz` (glibc — see below) |
+| Linux arm64 | `linux-arm64` | `knit-linux-arm64.tar.gz` (glibc — see below) |
+| macOS Apple Silicon | `osx-arm64` | `knit-osx-arm64.tar.gz` |
+| macOS Intel | `osx-x64` | `knit-osx-x64.tar.gz` |
+
+Each archive holds `knit` (`knit.exe` on Windows), `LICENSE` and
+`THIRD-PARTY-NOTICES.md`. `SHA256SUMS` beside them verifies a download:
+
+```bash
+sha256sum -c --ignore-missing SHA256SUMS    # Linux
+shasum -a 256 knit-<rid>.tar.gz             # macOS: compare with its line in SHA256SUMS
+```
+
+```powershell
+(Get-FileHash .\knit-win-x64.zip).Hash      # compare with its line in SHA256SUMS
+```
 
 ## 1. Put the binary on your PATH
 
@@ -16,7 +30,7 @@ build it from source (`dotnet publish`, see [CONTRIBUTING.md](CONTRIBUTING.md)).
 ```powershell
 $dir = "$env:LOCALAPPDATA\Programs\Knit"
 New-Item -ItemType Directory -Force $dir | Out-Null
-Copy-Item .\knit.exe $dir -Force
+Expand-Archive .\knit-win-x64.zip $dir -Force
 [Environment]::SetEnvironmentVariable('Path', "$([Environment]::GetEnvironmentVariable('Path','User'));$dir", 'User')
 ```
 
@@ -25,16 +39,17 @@ Open a new shell afterwards — PATH changes don't reach running ones.
 ### macOS / Linux
 
 ```bash
-install -Dm755 knit ~/.local/bin/knit          # ~/.local/bin on PATH? add it if not
-xattr -d com.apple.quarantine ~/.local/bin/knit  # macOS only, see below
+mkdir -p ~/.local/bin                              # on PATH? add it if not
+tar -xzf knit-<rid>.tar.gz -C ~/.local/bin knit    # <rid>: from the table above
+xattr -d com.apple.quarantine ~/.local/bin/knit    # macOS only, see below
 ```
 
-The executable bit is lost when a binary is copied or zipped from Windows —
-`chmod +x knit` if `install -m755` wasn't used.
+The archive keeps the executable bit. A bare binary copied or zipped from
+Windows loses it — `chmod +x knit`.
 
 #### Linux needs glibc
 
-The `linux-x64` build is linked against glibc, so musl-based distros — Alpine
+The Linux builds are linked against glibc, so musl-based distros — Alpine
 above all — cannot run it. The missing ELF loader is reported as if the file
 weren't there:
 
