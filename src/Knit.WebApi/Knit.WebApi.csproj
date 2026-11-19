@@ -57,7 +57,7 @@
     </ItemGroup>
     <ItemGroup>
       <EmbeddedResource Include="@(_SpaDistFile)">
-        <Link>wwwroot\%(_SpaDistFile.RecursiveDir)%(_SpaDistFile.Filename)%(_SpaDistFile.Extension)</Link>
+        <Link>wwwroot/%(_SpaDistFile.RecursiveDir)%(_SpaDistFile.Filename)%(_SpaDistFile.Extension)</Link>
       </EmbeddedResource>
     </ItemGroup>
   </Target>
