@@ -56,8 +56,11 @@
       <_SpaDistFile Include="$(SpaSourceDir)\dist\**\*.*" />
     </ItemGroup>
     <ItemGroup>
+      <!-- `/`, not `\`: MSBuild leaves metadata untouched on Unix, so a
+           backslash ends up inside the manifest's file name and the
+           `wwwroot` folder doesn't exist there. -->
       <EmbeddedResource Include="@(_SpaDistFile)">
-        <Link>wwwroot\%(_SpaDistFile.RecursiveDir)%(_SpaDistFile.Filename)%(_SpaDistFile.Extension)</Link>
+        <Link>wwwroot/%(_SpaDistFile.RecursiveDir)%(_SpaDistFile.Filename)%(_SpaDistFile.Extension)</Link>
       </EmbeddedResource>
     </ItemGroup>
   </Target>
