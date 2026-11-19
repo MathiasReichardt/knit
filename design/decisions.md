@@ -617,7 +617,7 @@ Incremental (Inputs/Outputs), skipped on design-time builds and `SkipNpmBuild`; 
 - **Rejected:** `TreatWarningsAsErrors` for all warnings — unrelated analyzer noise would block releases.
 
 ### Third-party license gaps are pinned by hand in `OVERRIDES`, never guessed
-`tools/gen-npm-notices.mjs` refuses an unresolved license; a dual license or a missing field gets an `OVERRIDES` entry.
+`tools/gen-notices.mjs` refuses an unresolved license; a dual license or a missing field gets an `OVERRIDES` entry.
 - **Why:** the notices ship inside the binary (`knit licenses`), so a wrong license is a wrong legal statement.
 - `dompurify` (`MPL-2.0 OR Apache-2.0`): Apache-2.0 elected — no file-level copyleft, and its text ships anyway
   for `@chevrotain/types`.

@@ -23,11 +23,13 @@ from a local machine.
   - MinVer versioning, as specified below
   - NuGet lock files + audit
   - `artifacts/` output folder, gitignored
+  - notices: `tools/gen-notices.mjs` (renamed from `gen-npm-notices.mjs`) covers
+    NuGet + npm; `--check-licenses` in `Knit.Web.Tests`, `--check` ready for the
+    release job; CLAUDE.md / CONTRIBUTING.md rule replaced
 - Open:
   - ruleset: `main` requires the five `check (<rid>)` jobs (not `matrix`)
   - release job on `v*` tags, dry-run with `v0.12.0-rc.N` tags (deleted
     afterwards); it uploads the binaries only, no pdb / dbg / dSYM
-  - notices: generator incl. NuGet, the `--check-licenses` / `--check` split
   - `release` skill, `CHANGELOG.md`, the CLAUDE.md mention
   - README badges (CI, latest release); README > Install and `INSTALL.md`
     list all five RIDs

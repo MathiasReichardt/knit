@@ -112,9 +112,8 @@ All design docs live under [design/](design/).
   npm scripts so a solution-wide "Run All Tests" / `dotnet test` covers
   the SPA too: one `[Fact]` runs `npm test` (vitest), a second runs
   `npm run lint` (eslint) — keep lint green or `dotnet test` goes red.
-  A third runs `node tools/gen-npm-notices.mjs --check`, so a dependency
-  change that isn't reflected in `THIRD-PARTY-NOTICES.md` fails the build
-  (the notices are embedded in the CLI binary — see `knit licenses`).
+  A third runs `node tools/gen-notices.mjs --check-licenses`, so a
+  dependency with an unresolved or non-permissive license fails the build.
   The SPA's own specs live
   in `src/Knit.Web/src/**/*.test.ts`. **The SPA is unit-testable** —
   new pure logic (`src/lib/`, `src/stores/`) should get a co-located
@@ -252,14 +251,13 @@ All design docs live under [design/](design/).
   maintenance. If you can't find a good permissive option — or the
   best fit is obscure — ask the user before adding it instead of
   silently picking the closest match.
-- **A shipped dependency change updates
-  [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) in the same change.**
-  npm: rerun `node tools/gen-npm-notices.mjs` (`dotnet test` fails if stale);
-  a dual license or missing license field goes into the script's `OVERRIDES`.
-  NuGet: the table is hand-maintained and **nothing checks it** — reconcile it
-  with `dotnet list package --include-transitive` and each `.nuspec` on any
-  package or framework reference change to a shipped project. A dependency that
-  ships a `NOTICE` file must be reproduced (Apache-2.0 §4(d)).
+- **[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) is regenerated per
+  release, not per dependency change** — `node tools/gen-notices.mjs` (NuGet +
+  npm), embedded in the binary (`knit licenses`); the release job refuses a
+  stale file. A dependency change doesn't touch it, but a dual license or
+  missing license field goes into the script's `OVERRIDES` in the same change
+  (`dotnet test` fails until then). A dependency that ships a `NOTICE` file
+  must be reproduced (Apache-2.0 §4(d)).
 - **Examples and fixtures use invented, neutral names** — in tests, skills,
   docs and design examples alike. Never a real customer, employer, colleague,
   internal library or private skill, and no real domain specifics (spec titles,

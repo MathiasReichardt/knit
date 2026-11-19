@@ -21,20 +21,21 @@ Scope:
 - No dependency in either tree ships a `NOTICE` file, so there is nothing to
   reproduce under Apache-2.0 §4(d).
 
-The npm section is generated — **don't hand-edit it**. After any dependency
-change:
+Both lists are generated — **don't hand-edit them**. The NuGet list is the
+resolved closure of the shipped CLI (`src/Knit.Cli/packages.lock.json`, build-only
+packages excluded), each with the license, copyright and project URL from its
+`.nuspec`. They are regenerated for every release:
 
 ```bash
-node tools/gen-npm-notices.mjs           # rewrite the section
-node tools/gen-npm-notices.mjs --check   # fail if stale (CI)
+node tools/gen-notices.mjs                   # rewrite both sections
+node tools/gen-notices.mjs --check-licenses  # every dependency is permissive
+node tools/gen-notices.mjs --check           # fail if stale
 ```
 
-It reads each package's own license file for the copyright line, and refuses to
-run if a package's license can't be resolved. Dual-licensed packages and
-metadata gaps are pinned in the script's `OVERRIDES`, with the reasoning in
-[design/decisions.md](design/decisions.md) > Build & packaging. The .NET table is short and
-hand-maintained from `dotnet list package --include-transitive` plus each
-package's `.nuspec`.
+It reads each npm package's own license file for the copyright line, and refuses
+to run if a license can't be resolved or isn't permissive. Dual-licensed packages
+and metadata gaps are pinned in the script's `OVERRIDES`, with the reasoning in
+[design/decisions.md](design/decisions.md) > Build & packaging.
 
 `knit licenses` prints this file from inside the binary, so the notices travel
 with the executable rather than depending on this repo.
@@ -43,19 +44,23 @@ with the executable rather than depending on this repo.
 
 ## .NET (NuGet)
 
-All MIT. Licenses and copyright lines taken from each package's `.nuspec`.
+<!-- nuget-list:start -->
 
 | Package | Version | License | Copyright | Project |
 |---|---|---|---|---|
-| Spectre.Console | 0.57.1 | MIT | Patrik Svensson, Phil Scott, Nils Andresen, Cédric Luthi | https://github.com/spectreconsole/spectre.console |
-| Spectre.Console.Ansi | 0.57.1 | MIT | Patrik Svensson, Phil Scott, Nils Andresen, Cédric Luthi | https://github.com/spectreconsole/spectre.console |
-| System.CommandLine | 2.0.9 | MIT | © Microsoft Corporation | https://github.com/dotnet/command-line-api |
 | FunicularSwitch | 6.5.0 | MIT | bluehands GmbH & Co.mmunication KG | https://github.com/bluehands/Funicular-Switch |
 | FunicularSwitch.Analyzers | 1.0.0 | MIT | bluehands GmbH & Co.mmunication KG | https://github.com/bluehands/Funicular-Switch |
-| System.IO.Hashing | 10.0.9 | MIT | © Microsoft Corporation | https://dot.net/ |
-| Microsoft.Extensions.FileProviders.Embedded | 10.0.9 | MIT | © Microsoft Corporation | https://asp.net/ |
-| Microsoft.Extensions.FileProviders.Abstractions | 10.0.9 | MIT | © Microsoft Corporation | https://dot.net/ |
-| Microsoft.Extensions.Primitives | 10.0.9 | MIT | © Microsoft Corporation | https://dot.net/ |
+| Microsoft.Extensions.FileProviders.Abstractions | 10.0.9 | MIT | © Microsoft Corporation. All rights reserved. | https://dot.net/ |
+| Microsoft.Extensions.FileProviders.Embedded | 10.0.9 | MIT | © Microsoft Corporation. All rights reserved. | https://asp.net/ |
+| Microsoft.Extensions.Primitives | 10.0.9 | MIT | © Microsoft Corporation. All rights reserved. | https://dot.net/ |
+| Spectre.Console | 0.57.1 | MIT | Patrik Svensson, Phil Scott, Nils Andresen, Cédric Luthi | https://github.com/spectreconsole/spectre.console |
+| Spectre.Console.Ansi | 0.57.1 | MIT | Patrik Svensson, Phil Scott, Nils Andresen, Cédric Luthi | https://github.com/spectreconsole/spectre.console |
+| System.CommandLine | 2.0.9 | MIT | © Microsoft Corporation. All rights reserved. | https://github.com/dotnet/command-line-api |
+| System.IO.Hashing | 10.0.9 | MIT | © Microsoft Corporation. All rights reserved. | https://dot.net/ |
+
+Total: 9 packages.
+
+<!-- nuget-list:end -->
 
 The .NET runtime and base class libraries linked in by the Native AOT publish
 (`Microsoft.DotNet.ILCompiler`, `Microsoft.NET.ILLink.Tasks`, and the runtime
