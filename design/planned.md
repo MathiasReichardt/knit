@@ -32,14 +32,16 @@ from a local machine.
   - rulesets: `main` requires a PR and the five `check (<rid>)` jobs, owner
     bypass; `v*` tags can't be created, moved or deleted but by the owner
   - README badges: CI (`main`), latest release (stable only)
+  - release job on `v*` tags: tag validation in the `matrix` job, version
+    assert in smoke, notices `--check`, `npm audit`, changelog notes + install
+    footer, `gh release create`
+  - dry run `v0.12.0-rc.1`: published as an immutable prerelease, 5 archives +
+    `SHA256SUMS`, checksums match, `knit version` prints `0.12.0-rc.1`, the
+    executable bit survives in the tarballs; release deleted afterwards
+  - seroval / zod advisories fixed, `npm audit` passes
 - Open:
-  - release job on `v*` tags: written (tag validation in the `matrix` job,
-    version assert in smoke, notices `--check`, changelog notes, `gh release
-    create`); dry run with `v0.12.0-rc.N` tags (deleted afterwards) not yet done
-  - when the entry lands: decisions to `decisions.md`, the entry deleted
-  - before `v0.12.0`: the release job's `npm audit` fails today (seroval
-    critical, zod high; both have non-major fixes) — its own PR
   - first release `v0.12.0` from `main`
+  - when the entry lands: decisions to `decisions.md`, the entry deleted
 
 - **Releases come from CI only, on a `v*` tag push.** Every other push / PR runs
   a check job — build, test, AOT publish for every RID below — that publishes
