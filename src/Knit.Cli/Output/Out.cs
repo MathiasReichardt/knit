@@ -12,6 +12,30 @@ namespace Knit.Cli.Output;
 public static class Out
 {
     /// <summary>
+    /// A console on stderr. Spectre's CI enrichers (GitHub Actions, Azure
+    /// Pipelines, …) are off: they would switch ANSI on and change the width
+    /// for redirected output.
+    /// </summary>
+    public static IAnsiConsole Stderr() => Sized(AnsiConsole.Create(new AnsiConsoleSettings
+    {
+        Out = new AnsiConsoleOutput(Console.Error),
+        Enrichment = new ProfileEnrichment { UseDefaultEnrichers = false },
+    }));
+
+    /// <summary>
+    /// Test seam: a fixed width for every console knit creates. Without a
+    /// console (CI) Spectre falls back to 80 columns, so wrapping would depend
+    /// on the host running the tests.
+    /// </summary>
+    internal static int? WidthOverride { get; set; }
+
+    internal static IAnsiConsole Sized(IAnsiConsole console)
+    {
+        if (WidthOverride is { } width) console.Profile.Width = width;
+        return console;
+    }
+
+    /// <summary>
     /// Emit an error. The exit code is derived from the category. The
     /// <paramref name="msg"/> carries the specific situation (no
     /// internals, no stack traces — user-facing only).
@@ -28,10 +52,7 @@ public static class Out
         }
         else
         {
-            var stderr = AnsiConsole.Create(new AnsiConsoleSettings
-            {
-                Out = new AnsiConsoleOutput(Console.Error),
-            });
+            var stderr = Out.Stderr();
             stderr.MarkupLine($"[red]error:[/] {Markup.Escape(formatted)}");
         }
         return exit;
@@ -46,10 +67,7 @@ public static class Out
     public static void MintNote(string raw, SlugResult slug)
     {
         if (!slug.Changed) return;
-        var stderr = AnsiConsole.Create(new AnsiConsoleSettings
-        {
-            Out = new AnsiConsoleOutput(Console.Error),
-        });
+        var stderr = Out.Stderr();
         stderr.MarkupLine(
             $"[yellow]note:[/] id {Markup.Escape(raw)} → {Markup.Escape(slug.Value)} [dim]({Markup.Escape(slug.Reason!)})[/]");
     }

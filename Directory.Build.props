@@ -11,8 +11,12 @@
          AOT publish fails on it. ILC also reports warnings from dependencies
          that the build-time analyzers never see. -->
     <IlcTreatWarningsAsErrors>true</IlcTreatWarningsAsErrors>
-    <Version>0.12.0</Version>
-    <InformationalVersion>0.12.0</InformationalVersion>
+    <!-- MinVer derives the version from the latest v* tag; untagged builds read
+         e.g. 0.13.0-dev.5, never a release version. -->
+    <MinVerTagPrefix>v</MinVerTagPrefix>
+    <MinVerDefaultPreReleaseIdentifiers>dev</MinVerDefaultPreReleaseIdentifiers>
+    <MinVerAutoIncrement>minor</MinVerAutoIncrement>
+    <MinVerMinimumMajorMinor>0.12</MinVerMinimumMajorMinor>
     <!-- The SDK otherwise appends +$(SourceRevisionId) to the informational
          version, and the version flag would print it verbatim. -->
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
@@ -20,7 +24,18 @@
     <Authors>Mathias Reichardt</Authors>
     <Copyright>Copyright (c) 2026 Mathias Reichardt</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <!-- Lock files expose the full graph (transitive included) to Dependabot and
+         key the CI cache. Not locked mode: PublishAot adds a host-RID ILCompiler
+         section whose version follows the SDK, so it differs per runner. -->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <!-- NuGet audit covers transitive packages; CI fails on high / critical
+         advisories, locally they stay warnings. -->
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <WarningsAsErrors Condition="'$(CI)' == 'true'">$(WarningsAsErrors);NU1903;NU1904</WarningsAsErrors>
     <RepositoryUrl>https://github.com/MathiasReichardt/knit</RepositoryUrl>
     <PackageProjectUrl>https://github.com/MathiasReichardt/knit</PackageProjectUrl>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MinVer" Version="8.0.0" PrivateAssets="all" />
+  </ItemGroup>
 </Project>

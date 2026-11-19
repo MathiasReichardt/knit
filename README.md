@@ -1,13 +1,13 @@
+# Knit
+
+[![License: MIT](https://img.shields.io/github/license/MathiasReichardt/knit)](LICENSE)
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/logo/logo-dark.svg">
     <img src="assets/logo/logo-bright.svg" alt="Knit logo" width="96">
   </picture>
 </p>
-
-# Knit
-
-[![License: MIT](https://img.shields.io/github/license/MathiasReichardt/knit)](LICENSE)
 
 Git-native task tracker and knowledge base. Items, ADRs, and design docs
 are plain markdown in your repo. Single binary CLI built for AI agents,

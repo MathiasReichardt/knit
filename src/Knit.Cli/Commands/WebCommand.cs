@@ -113,7 +113,7 @@ public static class WebCommand
     /// </summary>
     private static void WarnNonLoopback(BindAddress bind, int port)
     {
-        var stderr = AnsiConsole.Create(new AnsiConsoleSettings { Out = new AnsiConsoleOutput(Console.Error) });
+        var stderr = Out.Stderr();
         var reach = bind.IsWildcard ? "every network interface" : $"{bind.Value}";
         stderr.MarkupLine(
             $"[yellow]warning:[/] bound to {reach} on port {port}. The API is unauthenticated and has " +

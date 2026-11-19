@@ -1,0 +1,12 @@
+version: 2
+updates:
+  # Actions only: npm / NuGet bumps change THIRD-PARTY-NOTICES.md, so they're done by hand.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]

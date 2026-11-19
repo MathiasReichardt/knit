@@ -1408,6 +1408,9 @@ public static class RepoVerifier
         store.AllItemFiles()
             .Select(f => LinkPath.IdFromFolderName(ItemLayout.EntryName(f)))
             .OfType<string>()
+            // Directory order is the filesystem's (alphabetical on NTFS, not on
+            // ext4 / APFS); sorted, the candidate list reads the same everywhere.
+            .Order(StringComparer.Ordinal)
             .ToList();
 
     // Only the full id names one item forever: a prefix unique today turns

@@ -14,6 +14,9 @@
     <PackageReference Include="Spectre.Console" Version="0.57.1" />
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="Knit.Cli.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Knit.Core\Knit.Core.csproj" />
     <ProjectReference Include="..\Knit.Data\Knit.Data.csproj" />
     <ProjectReference Include="..\Knit.WebApi\Knit.WebApi.csproj" />

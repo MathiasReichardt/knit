@@ -129,8 +129,10 @@ public static class FileEndpoints
     {
         fullPath = "";
         error = null;
-        var normalized = requested.Replace('\\', '/').TrimStart('/');
-        if (Path.IsPathRooted(normalized))
+        // A leading `/` is absolute on Unix; trimming it would quietly turn
+        // `/etc/x` into a repo-relative path.
+        var normalized = requested.Replace('\\', '/');
+        if (Path.IsPathRooted(normalized) || normalized.StartsWith('/'))
         {
             error = "absolute paths are not allowed";
             return false;

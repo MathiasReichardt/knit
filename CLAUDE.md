@@ -19,10 +19,12 @@ NanoID ids, due dates, priority, tags, slates, the deadline timeline
 [design/planned.md](design/planned.md); milestones in
 [design/roadmap.md](design/roadmap.md).
 
-**No CI pipeline yet** — there is no `.github` workflow. The
-solution-wide gate is `dotnet test`: the `Knit.Web.Tests` bridge folds
-the SPA's vitest suite *and* its eslint gate into "Run All Tests" (see
-`tests/Knit.Web.Tests` below).
+**CI** — [.github/workflows/ci.yml](.github/workflows/ci.yml) runs on every
+PR and push to `main`: `dotnet test` plus an AOT publish and `knit version`
+smoke run for every RID. The solution-wide gate is `dotnet test`: the
+`Knit.Web.Tests` bridge folds the SPA's vitest suite *and* its eslint gate
+into "Run All Tests" (see `tests/Knit.Web.Tests` below). The version comes
+from the latest `v*` tag via MinVer — there is no version number to bump.
 
 ## Design docs
 

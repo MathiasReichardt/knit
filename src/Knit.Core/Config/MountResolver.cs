@@ -191,8 +191,10 @@ public static class MountResolver
         fullPath = "";
         if (!TryResolveDir(root, effective, mount, out var dir, out error)) return false;
 
-        var normalized = relPath.Replace('\\', '/').TrimStart('/');
-        if (Path.IsPathRooted(normalized))
+        // A leading `/` is absolute on Unix; trimming it would quietly turn
+        // `/etc/x` into a mount-relative path.
+        var normalized = relPath.Replace('\\', '/');
+        if (Path.IsPathRooted(normalized) || normalized.StartsWith('/'))
         {
             error = "absolute paths are not allowed";
             return false;
