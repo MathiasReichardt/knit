@@ -15,6 +15,26 @@ publishes the binaries and the manifest they read.
 GitHub Actions builds, tests and publishes every release; nothing is released
 from a local machine.
 
+**Progress** — paused after the check job; delete this block when the entry lands.
+
+- Done (`ci.yml`, `Directory.Build.props`):
+  - check job: the five-RID matrix, the full suite on four RIDs, AOT publish +
+    `knit version` smoke on all five, `workflow_dispatch` with an RID choice
+  - MinVer versioning, as specified below
+  - NuGet lock files + audit
+  - `artifacts/` output folder, gitignored
+- Open:
+  - ruleset: `main` requires the five `check (<rid>)` jobs (not `matrix`)
+  - release job on `v*` tags, dry-run with `v0.12.0-rc.N` tags (deleted
+    afterwards); it uploads the binaries only, no pdb / dbg / dSYM
+  - notices: generator incl. NuGet, the `--check-licenses` / `--check` split
+  - `release` skill, `CHANGELOG.md`, the CLAUDE.md mention
+  - README badges (CI, latest release); README > Install and `INSTALL.md`
+    list all five RIDs
+  - `v*` tag ruleset
+  - when the entry lands: decisions to `decisions.md`, the entry deleted
+  - first release `v0.12.0` from `main`
+
 - **Releases come from CI only, on a `v*` tag push.** Every other push / PR runs
   a check job — build, test, AOT publish for every RID below — that publishes
   nothing. Git refuses a duplicate tag and GitHub a duplicate release,
@@ -46,7 +66,7 @@ from a local machine.
 - **The release runs the check job first** (`needs: check`): the same matrix on
   the tag commit, and the publish job runs only when every leg passed — a red
   test means no release, all-or-nothing across RIDs.
-  - The full suite (incl. `Knit.Web.Tests`: vitest, eslint, notices check) runs
+  - The full suite (incl. `Knit.Web.Tests`: vitest, eslint, license check) runs
     natively on `win-x64`, `linux-x64`, `linux-arm64`, `osx-arm64`; `osx-x64`
     is build + publish only — the same code is tested on macOS arm64.
   - Tests exercise the JIT build; each AOT binary gets a `knit version` smoke
@@ -80,7 +100,30 @@ from a local machine.
     don't report `0.0.0-dev.N`.
   - The tag decides the version, not MinVer: only fixes since the last tag →
     patch; any feature or behaviour change → minor.
-- **A `release` skill** owns the flow: changelog, version recommendation, tag.
+- **A `release` skill** owns the flow: changelog, version recommendation,
+  notices, tag.
+- **`THIRD-PARTY-NOTICES.md` is regenerated per release, not per dependency
+  change.** A bump (Dependabot security update, hand bump) no longer has to
+  touch it, so it no longer fails `dotnet test`.
+  - The generator covers both halves: npm as today, and NuGet from the shipped
+    projects' `packages.lock.json` (resolved closure) plus each package's
+    `.nuspec` in the NuGet cache (license expression, copyright, project URL).
+    An unresolved or non-permissive license fails it, as on the npm side;
+    gaps get an `OVERRIDES` entry.
+  - The `release` skill runs it before tagging and commits the result with the
+    changelog; the release job runs `--check` and refuses a stale file, so every
+    published binary embeds the text of its own dependencies.
+  - The check splits in two:
+    - `--check-licenses` stays in `Knit.Web.Tests`: every npm and NuGet
+      dependency resolves to a permissive license, without comparing the file —
+      so a bad license still fails its PR, and a plain bump passes.
+    - `--check` (file matches the regenerated output) runs only in the release
+      job.
+  - Replaces the "a dependency change updates THIRD-PARTY-NOTICES.md in the
+    same change" rule in CLAUDE.md and CONTRIBUTING.md.
+  - **Rejected:** regenerating per PR (every patch bump needs a manual commit;
+    Dependabot can't run the script); generating at release without committing
+    (the repo's file would drift from what ships).
 - **`CHANGELOG.md`** per Keep a Changelog, starting with the first release.
   CLAUDE.md names it and the `release` skill, replacing the "remind to tag after
   a version bump" note.
