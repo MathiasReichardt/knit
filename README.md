@@ -1,5 +1,7 @@
 # Knit
 
+[![CI](https://github.com/MathiasReichardt/knit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/MathiasReichardt/knit/actions/workflows/ci.yml?query=branch%3Amain)
+[![Latest release](https://img.shields.io/github/v/release/MathiasReichardt/knit?sort=semver)](https://github.com/MathiasReichardt/knit/releases/latest)
 [![License: MIT](https://img.shields.io/github/license/MathiasReichardt/knit)](LICENSE)
 
 <p align="center">

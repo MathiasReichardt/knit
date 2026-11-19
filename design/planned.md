@@ -29,13 +29,13 @@ from a local machine.
   - README > Install and `INSTALL.md`: all five RIDs, the per-RID archives
   - `release` skill (`.claude/skills/release/`), `CHANGELOG.md`, the CLAUDE.md
     mention
+  - rulesets: `main` requires a PR and the five `check (<rid>)` jobs, owner
+    bypass; `v*` tags can't be created, moved or deleted but by the owner
+  - README badges: CI (`main`), latest release (stable only)
 - Open:
-  - ruleset: `main` requires the five `check (<rid>)` jobs (not `matrix`)
   - release job on `v*` tags: written (tag validation in the `matrix` job,
     version assert in smoke, notices `--check`, changelog notes, `gh release
     create`); dry run with `v0.12.0-rc.N` tags (deleted afterwards) not yet done
-  - README badges (CI, latest release)
-  - `v*` tag ruleset
   - when the entry lands: decisions to `decisions.md`, the entry deleted
   - before `v0.12.0`: the release job's `npm audit` fails today (seroval
     critical, zod high; both have non-major fixes) — its own PR
