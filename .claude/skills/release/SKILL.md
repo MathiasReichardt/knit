@@ -98,7 +98,9 @@ change, `X.Y.Z` is the version the next stable release will get.
 
 ## When the release job fails
 
-Nothing was published. A flaky leg: "Re-run failed jobs" on the run. A failure
+Nothing was published — but a failed upload can leave a draft release behind
+(Releases page, marked "Draft"). The user deletes it before the next attempt,
+or the next `gh release create` for that tag fails. A flaky leg: "Re-run failed jobs" on the run. A failure
 that needs a code change: fix it via PR, then either release the next patch
 version, or — since no release points at the tag — delete it
 (`git push origin :refs/tags/vX.Y.Z`, owner bypass of the tag ruleset;
