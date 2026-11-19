@@ -32,9 +32,6 @@ xattr -d com.apple.quarantine ~/.local/bin/knit  # macOS only, see below
 The executable bit is lost when a binary is copied or zipped from Windows —
 `chmod +x knit` if `install -m755` wasn't used.
 
-With Nix, skip the download: `nix profile install github:MathiasReichardt/knit`
-(or `nix run github:MathiasReichardt/knit -- --version` to try it).
-
 #### Linux needs glibc
 
 The `linux-x64` build is linked against glibc, so musl-based distros — Alpine
@@ -73,6 +70,26 @@ reachable from System Settings → Privacy & Security after the first refusal).
 
 A binary you copied over SSH/scp or built yourself is never quarantined — the
 tag only comes from the download.
+
+### Nix (flakes)
+
+No download, no glibc or quarantine caveats — the flake builds the binary:
+
+```bash
+nix run github:MathiasReichardt/knit -- --version   # try without installing
+nix shell github:MathiasReichardt/knit              # knit on PATH for this shell
+```
+
+To install, add it as an input to your NixOS or home-manager flake and use its
+package; `nix flake update knit` updates it:
+
+```nix
+inputs = {
+  knit.url = "github:MathiasReichardt/knit";
+};
+# NixOS:        environment.systemPackages = [ inputs.knit.packages.${pkgs.system}.default ];
+# home-manager: home.packages              = [ inputs.knit.packages.${pkgs.system}.default ];
+```
 
 ### Verify
 
