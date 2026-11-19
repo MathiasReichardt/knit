@@ -17,3 +17,7 @@ Directory.Build.user.props
 
 # Personal, machine-local Claude notes (never committed)
 CLAUDE.local.md
+
+# nix build output
+result
+result-*

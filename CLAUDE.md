@@ -19,8 +19,8 @@ NanoID ids, due dates, priority, tags, slates, the deadline timeline
 [design/planned.md](design/planned.md); milestones in
 [design/roadmap.md](design/roadmap.md).
 
-**No CI pipeline yet** — there is no `.github` workflow. The
-solution-wide gate is `dotnet test`: the `Knit.Web.Tests` bridge folds
+**CI is only the nix build** (`.github/workflows/nix.yml`: `nix build` +
+`knit --version`); it runs no tests. The solution-wide gate is `dotnet test`: the `Knit.Web.Tests` bridge folds
 the SPA's vitest suite *and* its eslint gate into "Run All Tests" (see
 `tests/Knit.Web.Tests` below).
 
@@ -131,6 +131,11 @@ All design docs live under [design/](design/).
 - **Every release gets a `v<version>` tag** on the commit its binaries
   were built from (e.g. `git tag v0.11.0 <sha>`) — that tag is how an
   old release is rebuilt. After a version bump, remind the user to tag.
+- **`flake.nix` builds the AOT binary** with `nix build`; the SPA is a
+  separate npm derivation (no network in the sandbox, so `SkipNpmBuild=true`).
+  A NuGet package change must regenerate `nix-deps.json`
+  (`nix build .#default.fetch-deps && ./result nix-deps.json`) or the nix CI
+  build fails.
 - New CLI behavior tests go in `tests/Knit.Cli.Tests` with
   `[Collection(nameof(CliCollection))]` and use the `TempKnitRoot`
   fixture (auto-cleanup, captures stdout + stderr).

@@ -45,13 +45,26 @@ not the .NET SDK. One-time setup:
 Plain PowerShell will fail with `LNK1104` or "linker not found" — the
 dev shell is required because the env vars don't persist.
 
+### Nix
+
+`nix build` produces the AOT binary at `result/bin/knit` (Linux; macOS builds
+framework-dependent). CI runs it on every push and PR. NuGet packages are pinned
+in [nix-deps.json](nix-deps.json) — after a NuGet change, regenerate it:
+
+```bash
+nix build .#default.fetch-deps && ./result nix-deps.json
+```
+
+npm needs nothing: the flake reads `package-lock.json` directly.
+
 ## Dependencies and notices
 
 Only permissively licensed dependencies (MIT, Apache-2.0, BSD, ISC, Unlicense,
 MPL-2.0). A dependency change updates
 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) in the same change: the npm
 half is generated — run `node tools/gen-npm-notices.mjs` (`dotnet test` fails
-if it's stale); the NuGet table is maintained by hand.
+if it's stale); the NuGet table is maintained by hand, and a NuGet change also
+regenerates [nix-deps.json](nix-deps.json) (see [Nix](#nix)).
 
 ## Dogfooding: PM simulation
 

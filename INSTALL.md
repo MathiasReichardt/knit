@@ -32,6 +32,9 @@ xattr -d com.apple.quarantine ~/.local/bin/knit  # macOS only, see below
 The executable bit is lost when a binary is copied or zipped from Windows —
 `chmod +x knit` if `install -m755` wasn't used.
 
+With Nix, skip the download: `nix profile install github:MathiasReichardt/knit`
+(or `nix run github:MathiasReichardt/knit -- --version` to try it).
+
 #### Linux needs glibc
 
 The `linux-x64` build is linked against glibc, so musl-based distros — Alpine
