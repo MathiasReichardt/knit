@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\Knit.Core\Knit.Core.csproj" />
+  </ItemGroup>
+</Project>

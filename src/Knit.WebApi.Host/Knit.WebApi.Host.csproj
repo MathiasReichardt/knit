@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Knit.WebApi.Host</RootNamespace>
+    <AssemblyName>knit-webapi</AssemblyName>
+    <PublishAot>true</PublishAot>
+    <StripSymbols>true</StripSymbols>
+    <ApplicationIcon>..\..\assets\logo\logo-background.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Knit.WebApi\Knit.WebApi.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,93 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+html, body, #root {
+  height: 100%;
+}
+
+/* The theme is a `.dark` class, which the browser's own widget rendering
+   cannot see — without this every native control (date fields and their
+   calendar popup, select dropdowns, scrollbars) stays white in dark mode. */
+html {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  @apply bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100;
+}
+
+/* Rendered `bucket:slug` KB refs — code-spans linkified by the
+   marked kbRef extension. Styled as a chip so they read as refs, not
+   prose, and override the default prose code/link styling. */
+.kb-ref,
+.prose a.kb-ref {
+  @apply font-mono text-[0.85em] no-underline cursor-pointer rounded px-1 py-0.5;
+  @apply bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300;
+}
+.kb-ref:hover,
+.prose a.kb-ref:hover {
+  @apply bg-blue-100 dark:bg-blue-900/60;
+}
+
+/* Copy-a-section-link button the heading renderer emits (lib/markdown.ts).
+   Shown on heading hover only; never part of selected text. */
+.section-link {
+  @apply ml-2 inline-flex align-middle rounded p-0.5 text-zinc-400 opacity-0 select-none cursor-pointer;
+  @apply hover:text-zinc-700 hover:bg-zinc-100 dark:hover:text-zinc-200 dark:hover:bg-zinc-800;
+}
+.section-link svg {
+  @apply size-4 m-0;
+}
+:is(h2, h3):hover > .section-link,
+.section-link:focus-visible {
+  @apply opacity-100;
+}
+
+/* Roving cursor ring for the landing card grid. Driven by our own
+   cursor state (a class toggled in RowCarousel), not `:focus-visible`, so it
+   survives a window blur and programmatic refocus. `outline-offset: -2px`
+   draws it *inside* the card so the overflow-hidden carousel viewport never
+   clips it on any edge. The outline follows the card's `rounded-lg`. */
+.knit-card-cursor {
+  outline: 2px solid rgb(59 130 246); /* blue-500 */
+  outline-offset: -2px;
+}
+
+/* One-shot highlight pulse on a heading after the outline scrolls to it
+   (Designs / KB), so the jump target is visually obvious. Applied + cleared
+   by lib/headingFlash.ts, in the editor by BodyEditor's line decoration. */
+@keyframes knit-flash {
+  /* Three quick pulses (bright→dim×3) then a fade-out. `linear` (below) keeps
+     each pulse evenly paced — an ease curve front-loads the motion and the
+     pulses blur together. Keep the duration in sync with FLASH_MS in
+     lib/headingFlash.ts (the re-apply / cleanup window). */
+  0%   { background-color: rgb(59 130 246 / 0.55); }
+  16%  { background-color: rgb(59 130 246 / 0.10); }
+  33%  { background-color: rgb(59 130 246 / 0.55); }
+  50%  { background-color: rgb(59 130 246 / 0.10); }
+  66%  { background-color: rgb(59 130 246 / 0.55); }
+  100% { background-color: transparent; }
+}
+.knit-flash {
+  animation: knit-flash 1.8s linear;
+  border-radius: 0.25rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .knit-flash {
+    animation: none;
+  }
+}
+
+/* Word-level highlight painted on the matched search tokens after a
+   jump-to-occurrence (lib/searchHighlight.ts). Out-of-band via the CSS
+   Custom Highlight API, so it never touches the React-rendered DOM. */
+::highlight(knit-search-hit) {
+  background-color: rgb(250 204 21 / 0.5);
+  color: inherit;
+}

@@ -1,0 +1,17 @@
+.mermaid-pickable.mermaid-hovering {
+  cursor: pointer;
+}
+
+.mermaid-pickable .mermaid-hover {
+  filter: drop-shadow(0 0 1px var(--mermaid-pick)) drop-shadow(0 0 1px var(--mermaid-pick));
+}
+
+.mermaid-pickable .mermaid-flash {
+  animation: mermaid-flash 700ms ease-out;
+}
+
+@keyframes mermaid-flash {
+  from {
+    filter: drop-shadow(0 0 3px var(--mermaid-pick)) drop-shadow(0 0 3px var(--mermaid-pick));
+  }
+}

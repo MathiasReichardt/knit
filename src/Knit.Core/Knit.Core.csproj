@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="FunicularSwitch" Version="6.5.0" />
+    <PackageReference Include="FunicularSwitch.Generators" Version="4.6.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\Defaults\*.md" />
+    <EmbeddedResource Include="Templates\Kb\*.md" />
+    <EmbeddedResource Include="Templates\Designs\*.md" />
+  </ItemGroup>
+</Project>

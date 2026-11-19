@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Knit.Cli</RootNamespace>
+    <AssemblyName>knit</AssemblyName>
+    <!-- AOT settings only kick in on `dotnet publish`. `dotnet build` stays normal. -->
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <StripSymbols>true</StripSymbols>
+    <ApplicationIcon>..\..\assets\logo\logo-background.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="2.0.9" />
+    <PackageReference Include="Spectre.Console" Version="0.57.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Knit.Core\Knit.Core.csproj" />
+    <ProjectReference Include="..\Knit.Data\Knit.Data.csproj" />
+    <ProjectReference Include="..\Knit.WebApi\Knit.WebApi.csproj" />
+  </ItemGroup>
+  <!-- Every file of every skill, keyed by its path under skills/ (RecursiveDir uses the OS separator; the installer normalizes). -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\skills\**\*.md" LogicalName="Knit.Cli.EmbeddedSkill/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+  <!--
+    MIT/ISC/BSD all require the notice to travel with a binary redistribution.
+    A release artifact is a bare executable, so the notices have to live inside
+    it — `knit licenses` prints them.
+  -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\LICENSE" LogicalName="Knit.Cli.Legal.LICENSE" />
+    <EmbeddedResource Include="..\..\THIRD-PARTY-NOTICES.md" LogicalName="Knit.Cli.Legal.THIRD-PARTY-NOTICES.md" />
+  </ItemGroup>
+</Project>

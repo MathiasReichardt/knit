@@ -1,0 +1,40 @@
+<Project>
+  <UsingTask TaskName="GetFileSize"
+             TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Path ParameterType="System.String" Required="true" />
+      <Size ParameterType="System.Int64" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        Size = new System.IO.FileInfo(Path).Length;
+      ]]></Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="CheckPublishBinarySize"
+          AfterTargets="Publish"
+          Condition="'$(PublishAot)' == 'true' and '$(OutputType)' == 'Exe'">
+    <PropertyGroup>
+      <_BinaryExt Condition="'$(OS)' == 'Windows_NT'">.exe</_BinaryExt>
+      <_BinaryPath>$([System.IO.Path]::Combine($(PublishDir), $(AssemblyName)$(_BinaryExt)))</_BinaryPath>
+      <_WarnBytes>36700160</_WarnBytes>
+      <_FailBytes>52428800</_FailBytes>
+    </PropertyGroup>
+
+    <GetFileSize Path="$(_BinaryPath)" Condition="Exists('$(_BinaryPath)')">
+      <Output TaskParameter="Size" PropertyName="_BinarySize" />
+    </GetFileSize>
+
+    <Message Importance="high"
+             Text="AOT binary $(AssemblyName)$(_BinaryExt): $(_BinarySize) bytes (warn &gt; $(_WarnBytes), fail &gt; $(_FailBytes))"
+             Condition="'$(_BinarySize)' != ''" />
+
+    <Warning Text="AOT binary $(_BinaryPath) is $(_BinarySize) bytes — over the 35 MB warn threshold ($(_WarnBytes))."
+             Condition="'$(_BinarySize)' != '' and $([MSBuild]::ValueOrDefault('$(_BinarySize)','0')) &gt; $(_WarnBytes) and $([MSBuild]::ValueOrDefault('$(_BinarySize)','0')) &lt;= $(_FailBytes)" />
+
+    <Error Text="AOT binary $(_BinaryPath) is $(_BinarySize) bytes — exceeds the 50 MB fail threshold ($(_FailBytes))."
+           Condition="'$(_BinarySize)' != '' and $([MSBuild]::ValueOrDefault('$(_BinarySize)','0')) &gt; $(_FailBytes)" />
+  </Target>
+</Project>

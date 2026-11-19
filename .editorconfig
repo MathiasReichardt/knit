@@ -1,0 +1,25 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+[*.{cs,ps1}]
+indent_size = 4
+
+# Windows PowerShell 5.1 reads a BOM-less script as ANSI and mangles non-ASCII.
+[*.ps1]
+charset = utf-8-bom
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.sln]
+indent_style = tab
+
+[*.{cmd,bat}]
+end_of_line = crlf

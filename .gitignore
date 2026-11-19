@@ -1,0 +1,19 @@
+bin/
+obj/
+.vs/
+.idea/
+.vscode/
+*.user
+.test_sandbox/
+
+# Node / Vite tooling artifacts (stray root-level node_modules + caches;
+# the SPA's own src/Knit.Web/node_modules has its own ignore)
+node_modules/
+
+# Local Knit.WebApi.Host config (use webapi.config.sample.json as template)
+webapi.config.json
+Directory.Build.user.props
+.claude/settings.local.json
+
+# Personal, machine-local Claude notes (never committed)
+CLAUDE.local.md

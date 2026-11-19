@@ -1,0 +1,13 @@
+[
+  { "name": "plain", "body": "## Goals\n\ntext\n\n### Open questions", "anchors": ["goals", "open-questions"] },
+  { "name": "repeats get doc-wide suffixes", "body": "## Goals\n## Notes\n### Goals\n## Goals", "anchors": ["goals", "notes", "goals-2", "goals-3"] },
+  { "name": "umlauts fold", "body": "## Übersicht für Kunden", "anchors": ["ubersicht-fur-kunden"] },
+  { "name": "punctuation and inline code", "body": "## Use `knit ref` (v2)!", "anchors": ["use-knit-ref-v2"] },
+  { "name": "closing hashes", "body": "## Closing ##", "anchors": ["closing"] },
+  { "name": "cut at 40 characters", "body": "## A very long heading that runs past the forty character cap", "anchors": ["a-very-long-heading-that-runs-past-the-f"] },
+  { "name": "long headings alike in their first 40", "body": "## A very long heading that runs past the forty character cap\n## A very long heading that runs past the first one", "anchors": ["a-very-long-heading-that-runs-past-the-f", "a-very-long-heading-that-runs-past-the-f-2"] },
+  { "name": "h1 and h4 have no anchor", "body": "# Title\n## Kept\n#### Deep", "anchors": ["kept"] },
+  { "name": "fenced code is skipped", "body": "```\n## not a heading\n```\n~~~md\n## nor this\n~~~\n## Real", "anchors": ["real"] },
+  { "name": "a pointer-like anchor", "body": "## Mermaid 1", "anchors": ["mermaid-1"] },
+  { "name": "nothing usable", "body": "## ???", "anchors": ["untitled"] }
+]

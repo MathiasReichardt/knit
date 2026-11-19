@@ -1,0 +1,24 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <IsAotCompatible>true</IsAotCompatible>
+    <!-- A trim / AOT warning is a runtime break the compiler can't see, so the
+         AOT publish fails on it. ILC also reports warnings from dependencies
+         that the build-time analyzers never see. -->
+    <IlcTreatWarningsAsErrors>true</IlcTreatWarningsAsErrors>
+    <Version>0.12.0</Version>
+    <InformationalVersion>0.12.0</InformationalVersion>
+    <!-- The SDK otherwise appends +$(SourceRevisionId) to the informational
+         version, and the version flag would print it verbatim. -->
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <Product>Knit</Product>
+    <Authors>Mathias Reichardt</Authors>
+    <Copyright>Copyright (c) 2026 Mathias Reichardt</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+</Project>
