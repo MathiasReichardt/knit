@@ -30,6 +30,19 @@ from a local machine.
   | `osx-arm64` | `macos-latest` (Apple Silicon) |
   | `osx-x64` | `macos-latest`, cross-arch — AOT targets x64 from an arm64 Mac |
 
+- **Prereleases** — a tag with a suffix (`v0.13.0-rc.1`) is a prerelease:
+  - Only `-rc.N` and `-beta.N` are accepted; the release job refuses any other
+    suffix, so semver order (`beta < rc < final`) holds.
+  - Its GitHub release is marked prerelease, never "Latest" — the badge,
+    `/releases/latest` and download links keep pointing at the last stable.
+  - It updates only the manifest's `prerelease` channel. A stable release
+    updates `stable` and also overwrites an older `prerelease` entry, so RC
+    users aren't stranded on an old RC.
+  - No changelog section of its own; entries stay under `[Unreleased]` until the
+    stable release.
+- **Stable releases only from `main`:** the release job refuses a stable tag
+  whose commit isn't reachable from `main`. A prerelease tag may sit on any
+  branch. No automatic dev builds — nothing publishes without a tag.
 - **The release runs the check job first** (`needs: check`): the same matrix on
   the tag commit, and the publish job runs only when every leg passed — a red
   test means no release, all-or-nothing across RIDs.
@@ -70,6 +83,13 @@ from a local machine.
 - **A `release` skill** owns the flow: changelog, version recommendation, tag.
 - **`CHANGELOG.md`** per Keep a Changelog, starting with the first release.
 - Every pipeline output goes to one gitignored `artifacts/` folder.
+- **Repo rules once the check job is green** (rulesets; `main` already blocks
+  force pushes and deletion):
+  - `main` requires the check job to pass. A check only exists after a push, so
+    this means changes land through a pull request — the PR is the vehicle for
+    the check, not for review.
+  - `v*` tags can't be deleted or moved, with the owner as bypass — a tag whose
+    release never published may still be moved.
 - README > Install and `INSTALL.md` list all five binaries and their RIDs.
 - Local builds stay plain `dotnet build` / `dotnet publish` and are never
   released.
