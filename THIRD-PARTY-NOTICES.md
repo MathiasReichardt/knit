@@ -207,8 +207,8 @@ notices for code they include.
 - **roughjs** 4.6.6 — Copyright (c) 2019 Preet Shihn
 - **safer-buffer** 2.1.2 — Copyright (c) 2018 Nikita Skovoroda <chalkerx@gmail.com>
 - **scheduler** 0.27.0 — Copyright (c) Meta Platforms, Inc. and affiliates.
-- **seroval** 1.5.4 — MIT License Copyright (c) 2025 Alexis Munsayac <alexis.munsayac@gmail.com>
-- **seroval-plugins** 1.5.4 — MIT License Copyright (c) 2025 Alexis Munsayac <alexis.munsayac@gmail.com>
+- **seroval** 1.8.2 — MIT License Copyright (c) 2025 Alexis Munsayac <alexis.munsayac@gmail.com>
+- **seroval-plugins** 1.8.0 — MIT License Copyright (c) 2025 Alexis Munsayac <alexis.munsayac@gmail.com>
 - **strictdom** 1.0.1 — Wilson Page
 - **style-mod** 4.1.3 — Copyright (C) 2018 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
 - **stylis** 4.4.0 — Copyright (c) 2016-present Sultan Tarimo
@@ -219,7 +219,7 @@ notices for code they include.
 - **util-deprecate** 1.0.2 — Copyright (c) 2014 Nathan Rajlich <nathan@tootallnate.net>
 - **uuid** 14.0.1 — Copyright (c) 2010-2020 Robert Kieffer and other contributors
 - **w3c-keyname** 2.2.8 — Copyright (C) 2016 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
-- **zod** 4.4.3 — Copyright (c) 2025 Colin McDonnell
+- **zod** 4.6.7 — Copyright (c) 2025 Colin McDonnell
 - **zustand** 5.0.14 — Copyright (c) 2019 Paul Henschel
 
 ### ISC (34)
@@ -271,7 +271,7 @@ notices for code they include.
 ### Apache-2.0 (2)
 
 - **@chevrotain/types** 11.1.2 — Shahar Soel
-- **dompurify** 3.4.16 — Dr.-Ing. Mario Heiderich, Cure53 <mario@cure53.de> (https://cure53.de/) *(dual-licensed `MPL-2.0 OR Apache-2.0`; Apache-2.0 elected)*
+- **dompurify** 3.4.18 — Dr.-Ing. Mario Heiderich, Cure53 <mario@cure53.de> (https://cure53.de/) *(dual-licensed `MPL-2.0 OR Apache-2.0`; Apache-2.0 elected)*
 
 ### 0BSD (1)
 
