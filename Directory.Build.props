@@ -24,6 +24,14 @@
     <Authors>Mathias Reichardt</Authors>
     <Copyright>Copyright (c) 2026 Mathias Reichardt</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <!-- Lock files expose the full graph (transitive included) to Dependabot and
+         key the CI cache. Not locked mode: PublishAot adds a host-RID ILCompiler
+         section whose version follows the SDK, so it differs per runner. -->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <!-- NuGet audit covers transitive packages; CI fails on high / critical
+         advisories, locally they stay warnings. -->
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <WarningsAsErrors Condition="'$(CI)' == 'true'">$(WarningsAsErrors);NU1903;NU1904</WarningsAsErrors>
     <RepositoryUrl>https://github.com/MathiasReichardt/knit</RepositoryUrl>
     <PackageProjectUrl>https://github.com/MathiasReichardt/knit</PackageProjectUrl>
   </PropertyGroup>
