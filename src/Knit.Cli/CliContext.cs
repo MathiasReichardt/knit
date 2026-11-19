@@ -197,7 +197,7 @@ internal static class RootNotice
 {
     public static void Announce(RepoDiscovery.RootResolution resolution, string cwd, bool verbose)
     {
-        var stderr = AnsiConsole.Create(new AnsiConsoleSettings { Out = new AnsiConsoleOutput(Console.Error) });
+        var stderr = Out.Stderr();
 
         foreach (var dir in resolution.Skipped)
             stderr.MarkupLine(

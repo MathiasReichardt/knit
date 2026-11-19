@@ -57,10 +57,7 @@ public static class PickCommand
                 return Out.Error("no items match the given filters", ErrorCode.NotFound);
 
             // UI to stderr — keeps stdout clean for `$(knit pick)` substitution.
-            var ui = AnsiConsole.Create(new AnsiConsoleSettings
-            {
-                Out = new AnsiConsoleOutput(Console.Error),
-            });
+            var ui = Out.Stderr();
 
             var prompt = new SelectionPrompt<Item>()
                 .Title("[bold]Pick an item[/]")

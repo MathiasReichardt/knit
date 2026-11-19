@@ -26,5 +26,9 @@ public static class TestEnvironment
         ConfigHome = Path.Combine(Path.GetTempPath(), $"knit-cli-cfg-{Guid.NewGuid():N}");
         Directory.CreateDirectory(ConfigHome);
         Environment.SetEnvironmentVariable("KNIT_CONFIG_HOME", ConfigHome);
+
+        // Wide enough that no temp path wraps, so assertions don't depend on
+        // the width of the console the tests run in (none on CI → 80).
+        Knit.Cli.Output.Out.WidthOverride = 400;
     }
 }
