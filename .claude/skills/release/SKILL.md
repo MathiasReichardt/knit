@@ -41,7 +41,9 @@ is one above the highest existing `vX.Y.Z-rc.*` tag
 3. **`[Unreleased]` empty** → ask whether to release anyway; show
    `git log <last>..HEAD --oneline` so the user can spot a change that should
    have had an entry.
-4. **Version** — proposed from the `[Unreleased]` categories, the user decides:
+4. **Version** — proposed from the `[Unreleased]` categories, the user decides.
+   Show the last version, the proposal, and the entries that decide it (the
+   highest-ranking category, quoted):
 
    | Categories present | Before 1.0 | From 1.0 |
    |---|---|---|
