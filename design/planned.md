@@ -116,8 +116,8 @@ from a local machine.
 - **A `release` skill** owns the flow: version proposal, changelog roll,
   notices, tag. Before tagging it runs the release job's gates locally
   (`gen-notices.mjs --check` after regenerating, `npm audit --omit=dev
-  --audit-level=high`, `dotnet list package --vulnerable --include-transitive`),
-  so a failure shows before a tag exists.
+  --audit-level=high`, `CI=true dotnet restore --force` for CI's NuGet audit
+  rule), so a failure shows before a tag exists.
   - The version is proposed from the `[Unreleased]` categories (Removed /
     breaking → minor before 1.0, major after; Added / Changed → minor; only
     Fixed / Security → patch); the user decides. Empty `[Unreleased]` → ask.

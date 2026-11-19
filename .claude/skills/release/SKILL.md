@@ -63,14 +63,13 @@ is one above the highest existing `vX.Y.Z-rc.*` tag
 7. **Gates** — the release job's, so a failure shows before a tag exists:
    ```bash
    npm ci --prefix src/Knit.Web
-   dotnet restore
+   CI=true dotnet restore --force                 # NuGet audit as in CI: high / critical fail
    node tools/gen-notices.mjs                     # regenerate
    node tools/gen-notices.mjs --check             # must pass now
    npm audit --prefix src/Knit.Web --omit=dev --audit-level=high
-   dotnet list package --vulnerable --include-transitive
    ```
-   The last one exits 0 either way: any "has the following vulnerable packages"
-   is a stop.
+   CI runs the same checks; here they fail before the release commit and tag
+   exist. `--force`: a no-op restore skips the audit.
 8. **Commit and tag**:
    ```bash
    git add -- CHANGELOG.md THIRD-PARTY-NOTICES.md
