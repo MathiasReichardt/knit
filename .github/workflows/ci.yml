@@ -175,10 +175,11 @@ jobs:
           if [[ $PRERELEASE == true ]]; then
             echo "Prerelease of $VERSION. Changes so far: [Unreleased] in CHANGELOG.md." > notes.md
           else
-            awk -v v="$VERSION" '
-              $0 ~ "^## \[" v "\]" { on = 1; next }
-              on && /^## \[/ { exit }
-              on { print }' CHANGELOG.md > notes.md
+            # index(), not a regex: the version's dots and brackets stay literal.
+            awk -v h="## [$VERSION]" '
+              index($0, h) == 1 { on = 1; next }
+              on && index($0, "## [") == 1 { exit }
+              on && !/^\[[^]]+\]: / { print }' CHANGELOG.md > notes.md
             if [[ ! -s notes.md ]]; then
               echo "::error::CHANGELOG.md has no ## [$VERSION] section"; exit 1
             fi

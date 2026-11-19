@@ -27,12 +27,13 @@ from a local machine.
     NuGet + npm; `--check-licenses` in `Knit.Web.Tests`, `--check` ready for the
     release job; CLAUDE.md / CONTRIBUTING.md rule replaced
   - README > Install and `INSTALL.md`: all five RIDs, the per-RID archives
+  - `release` skill (`.claude/skills/release/`), `CHANGELOG.md`, the CLAUDE.md
+    mention
 - Open:
   - ruleset: `main` requires the five `check (<rid>)` jobs (not `matrix`)
   - release job on `v*` tags: written (tag validation in the `matrix` job,
     version assert in smoke, notices `--check`, changelog notes, `gh release
     create`); dry run with `v0.12.0-rc.N` tags (deleted afterwards) not yet done
-  - `release` skill, `CHANGELOG.md`, the CLAUDE.md mention
   - README badges (CI, latest release)
   - `v*` tag ruleset
   - when the entry lands: decisions to `decisions.md`, the entry deleted
@@ -112,11 +113,24 @@ from a local machine.
     don't report `0.0.0-dev.N`.
   - The tag decides the version, not MinVer: only fixes since the last tag →
     patch; any feature or behaviour change → minor.
-- **A `release` skill** owns the flow: changelog, version recommendation,
+- **A `release` skill** owns the flow: version proposal, changelog roll,
   notices, tag. Before tagging it runs the release job's gates locally
   (`gen-notices.mjs --check` after regenerating, `npm audit --omit=dev
   --audit-level=high`, `dotnet list package --vulnerable --include-transitive`),
   so a failure shows before a tag exists.
+  - The version is proposed from the `[Unreleased]` categories (Removed /
+    breaking → minor before 1.0, major after; Added / Changed → minor; only
+    Fixed / Security → patch); the user decides. Empty `[Unreleased]` → ask.
+  - One run, on `main`: the release commit (changelog roll + notices) and its
+    tag are pushed together (`--atomic`), the owner bypassing the `main`
+    ruleset. The tag run tests that commit on every RID before publishing.
+    A prerelease tags any pushed commit, no release commit.
+  - No `gh`: no CI-status check before tagging — a red tag run publishes
+    nothing, and an unpublished tag may be deleted.
+  - **Rejected:** a `release/vX.Y.Z` PR for the release commit (a second run
+    after the merge, and a squash merge changes the commit to tag).
+  - A project skill under `.claude/skills/`, not in `skills/` — that is the
+    bundle shipped to consumers.
 - **Vulnerability gates:** NuGet audit fails high / critical advisories on every
   CI build; `npm audit` (production dependencies, high+) runs in the release job
   only.
@@ -145,14 +159,16 @@ from a local machine.
     Dependabot can't run the script); generating at release without committing
     (the repo's file would drift from what ships).
 - **`CHANGELOG.md`** per Keep a Changelog, starting with the first release.
-  CLAUDE.md names it and the `release` skill, replacing the "remind to tag after
-  a version bump" note.
+  Entries are written with the change, under `[Unreleased]` — its author has
+  the context; the release only rolls the section. CLAUDE.md names it and the
+  `release` skill, replacing the "remind to tag after a version bump" note.
 - Every pipeline output goes to one gitignored `artifacts/` folder.
 - **Repo rules once the check job is green** (rulesets; `main` already blocks
   force pushes and deletion):
   - `main` requires the check job to pass. A check only exists after a push, so
     this means changes land through a pull request — the PR is the vehicle for
-    the check, not for review.
+    the check, not for review. The owner may bypass — used only for the
+    release commit.
   - `v*` tags can't be deleted or moved, with the owner as bypass — a tag whose
     release never published may still be moved.
 - README > Install and `INSTALL.md` list all five binaries and their RIDs.

@@ -53,6 +53,13 @@ resolve — pin those in the `OVERRIDES` of `tools/gen-notices.mjs`.
 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) is regenerated for each
 release, so a dependency change doesn't touch it.
 
+## Changelog
+
+A change a user can notice — CLI, `--json` output, on-disk format, `knit web`,
+the shipped skills — adds its entry to [CHANGELOG.md](CHANGELOG.md) under
+`## [Unreleased]`, in the same PR. Lead with the effect, 1–3 lines; refactors,
+tests and CI get none.
+
 ## Dogfooding: PM simulation
 
 `demo/pm-simulation-driver.md` is a reusable brief for an autonomous,
