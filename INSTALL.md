@@ -67,8 +67,7 @@ yourself: `dotnet publish src/Knit.Cli/Knit.Cli.csproj -c Release -r linux-musl-
 #### The macOS binary is unsigned
 
 Knit has no Apple Developer ID signature and is not notarized (both need a paid
-Apple account, so they wait for a real release pipeline). macOS tags anything
-downloaded through a browser, Mail or AirDrop with a `com.apple.quarantine`
+Apple account). macOS tags anything downloaded through a browser, Mail or AirDrop with a `com.apple.quarantine`
 attribute; Gatekeeper then refuses to run an unsigned quarantined binary —
 *"knit cannot be opened because the developer cannot be verified"*, or
 `zsh: killed` on an Apple-Silicon build whose ad-hoc signature it rejects.
