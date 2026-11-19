@@ -85,8 +85,8 @@ need rewriting?"*
 Buckets sorted by how this rule applies:
 
 - **adr** — naturally compliant. An ADR records a decision *made*
-  (past tense), not a planned future decision. Capture as soon as the
-  decision is taken, even before implementation.
+  (past tense), not a planned future decision — a `proposed` one too:
+  it records a decision taken, not a claim that the code does it yet.
 - **source** — naturally compliant. An external doc is a real,
   present thing; recording it is recording reality.
 - **idea** — naturally compliant by construction. An idea is
@@ -117,19 +117,17 @@ per bucket:
 
 ### Capture a decision → ADR
 
-When a decision is taken (in design, in a PR discussion, in a chat),
-capture it immediately — even before implementation, because the
-*decision* is past-tense even if the *code* isn't.
+When to write it, and with which status, is one rule:
+[`knit`](../knit/SKILL.md) skill > ADR vs design `## Design Decisions`.
 
-**Offer an ADR only when both hold** — otherwise skip it:
+**The ADR test — offer an ADR only when both hold**, otherwise skip it:
 - *It binds* — costly to reverse, or a rule later work must follow
   (without the record, the next person or agent would decide it again,
   maybe differently).
 - *It was a real choice* — there were genuine alternatives, picked for
   reasons nobody can read from the code.
 
-Ask the user before writing it; in the `knit-work` skill's `auto` mode, comment the
-candidate on the item instead. A decision that fails the test is still
+A decision that fails the test is still
 recorded where it lives: the design's `## Design Decisions` while
 designing, else an item comment. A standing rule also
 belongs in the living doc that states current truth (`doc:architecture`);
@@ -158,10 +156,11 @@ will flag a title drift.
 - **Advance the status as the decision's life moves on**
   (`knit kb set adr:<slug> status <value>`). A new ADR is `proposed`;
   the lifecycle values are:
-  - `proposed` — drafted, not yet agreed (the default on creation).
-  - `accepted` — agreed and in force. **Set this once the decision is
-    settled / the code implementing it lands** — don't leave a live
-    decision sitting at `proposed`.
+  - `proposed` — taken, its work not yet closed (the default on
+    creation). Edit it in place while it is.
+  - `accepted` — in force. Set at the sweep when its work closes, or
+    right after `add` for a decision outside a design. Never edited
+    after; a change is a new ADR that supersedes it.
   - `rejected` — proposed but decided against; keep the ADR for the
     "why not" record.
   - `deprecated` — was accepted, now retired, but *not* replaced by a
@@ -179,6 +178,11 @@ will flag a title drift.
   `knit context` inheritance carry it to descendants (see
   [`knit-work`](../knit-work/SKILL.md) skill > Adding relations). Don't
   re-link it on every sub-item.
+
+**Auditing an existing repo** for decisions that were never recorded: read
+archived designs and closed items, apply the ADR test, dedupe against
+existing ADRs and skip what was superseded since. Two designs that
+contradict each other become an item to settle, not an ADR.
 
 ### Add an external source
 
@@ -388,8 +392,8 @@ claim) goes to the feedback loop — see
 
 - **Design cycles** — owned by the [`knit-design`](../knit-design/SKILL.md) skill.
   It creates designs, scaffolds the plan as Knit items, and
-  references KB entries from items as work progresses. ADRs land
-  during execution, not during planning.
+  references KB entries from items as work progresses. Its decisions
+  that pass the ADR test become `proposed` ADRs.
 - **Item↔KB linking mechanics** — `knit link --kb-ref <ref>` and the
   `## Links` table format live in [`knit`](../knit/SKILL.md) skill >
   Conventions and [`knit-cli`](../knit-cli/SKILL.md) skill.
