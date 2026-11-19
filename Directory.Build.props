@@ -20,5 +20,7 @@
     <Authors>Mathias Reichardt</Authors>
     <Copyright>Copyright (c) 2026 Mathias Reichardt</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/MathiasReichardt/knit</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/MathiasReichardt/knit</PackageProjectUrl>
   </PropertyGroup>
 </Project>

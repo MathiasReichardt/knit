@@ -91,21 +91,15 @@ from a local machine.
   - `v*` tags can't be deleted or moved, with the owner as bypass — a tag whose
     release never published may still be moved.
 - README > Install and `INSTALL.md` list all five binaries and their RIDs.
+- README badges beside the license badge, landing with the workflow so neither
+  is ever broken: CI status (the workflow's `badge.svg`), latest release
+  (shields.io `github/v/release`).
 - Local builds stay plain `dotnet build` / `dotnet publish` and are never
   released.
 - **Acceptance:** a dry run on a throwaway tag publishes all five RIDs, and each binary runs `knit version` on its own OS /
   arch; the
   first real release is `v0.12.0`, and `knit version` on its binaries prints
   `0.12.0`; an untagged build prints a `-dev.N` version.
-
-## Repository URL in metadata and README
-
-- `Directory.Build.props`: `RepositoryUrl` and `PackageProjectUrl`.
-- README > Install: link the releases page — today it names "the project's
-  releases page" without a link.
-- README badges under the title: license (shields.io `github/license`), CI
-  status (the workflow's `badge.svg`), latest release (shields.io
-  `github/v/release`).
 
 ---
 

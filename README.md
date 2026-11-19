@@ -7,6 +7,8 @@
 
 # Knit
 
+[![License: MIT](https://img.shields.io/github/license/MathiasReichardt/knit)](LICENSE)
+
 Git-native task tracker and knowledge base. Items, ADRs, and design docs
 are plain markdown in your repo. Single binary CLI built for AI agents,
 plus a local web UI for humans.
@@ -54,7 +56,8 @@ Roadmap in [design/roadmap.md](design/roadmap.md).
 
 ## Install
 
-Download the binary for your platform from the project's releases page:
+Download the binary for your platform from the
+[releases page](https://github.com/MathiasReichardt/knit/releases):
 
 - Linux: `knit-linux-x64`
 - Windows: `knit-win-x64.exe`
