@@ -12,7 +12,8 @@ the single source of truth; consult it when shaping CLI / web / data behavior,
 and don't duplicate the definition here.
 
 **Status:** Milestones 1a (CLI) and 1c (local web UI) complete. CLI is
-dogfoodable end-to-end, AOT publish verified on win-x64. `knit web`
+dogfoodable end-to-end, AOT publish verified in CI on win-x64,
+linux-x64, linux-arm64, osx-arm64 and osx-x64. `knit web`
 serves the React SPA in-process over loopback. The M1-polish wave added
 NanoID ids, due dates, priority, tags, slates, the deadline timeline
 (CLI + SPA), and projects/milestones/todos (unified tree). Open work is in

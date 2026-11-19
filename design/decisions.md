@@ -309,6 +309,17 @@ moving settled decisions into the KB is an agent walk-through, not a CLI parser.
   items are minted in parallel across branches, where counters collide on merge.
 - **Rejected:** sequential item ids; UUID or slug-identity ADRs; a repo-spanning ADR namespace (needs a coordinator).
 
+### ADRs are `proposed` when the decision is taken, `accepted` when its work closes
+The ADR test applies wherever a decision is written; a design writes a `proposed` ADR, a decision outside a design
+goes straight to `accepted`, `auto` only ever writes `proposed`. Every close the user confirms sweeps the `proposed`
+ADRs whose `origin` names the closed subtree or its design. Skills only; the rule lives once in `knit`.
+- **Why:** a "graduate to an ADR later" step no workflow ran left lasting decisions buried in archived designs,
+  closed items and comments, so a fresh agent decided them again.
+- **Rejected:** a promotion checkpoint over all design decisions at archive / close (judgement every time, skipped
+  like the old step); a `knit verify` check for unpromoted decisions (most rightly fail the test, so it warns
+  forever); `kb add adr --from` (`--origin` covers it); an `ADR candidate:` comment tag (the `proposed` ADR is the
+  record).
+
 ### Grow-to-folder only for `feature` / `doc` / `source`; the folder must be a real entry
 A folder needs its `readme.md`; sub-docs need an existing folder-form parent (`kb split` first, no auto-split).
 `adr` / `log` / `idea` stay flat.
