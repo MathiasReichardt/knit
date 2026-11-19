@@ -57,6 +57,9 @@ nix build .#default.fetch-deps && ./result nix-deps.json
 
 npm needs nothing: the flake reads `package-lock.json` directly.
 
+`direnv allow` (or `nix develop`) gives a shell with the pinned .NET SDK, Node
+and the AOT toolchain.
+
 ## Dependencies and notices
 
 Only permissively licensed dependencies (MIT, Apache-2.0, BSD, ISC, Unlicense,
