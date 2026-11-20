@@ -8,7 +8,7 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="10.0.9" />
-    <PackageReference Include="System.IO.Hashing" Version="10.0.9" />
+    <PackageReference Include="System.IO.Hashing" Version="11.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Knit.Core\Knit.Core.csproj" />
