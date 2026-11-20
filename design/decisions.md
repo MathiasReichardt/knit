@@ -309,6 +309,17 @@ moving settled decisions into the KB is an agent walk-through, not a CLI parser.
   items are minted in parallel across branches, where counters collide on merge.
 - **Rejected:** sequential item ids; UUID or slug-identity ADRs; a repo-spanning ADR namespace (needs a coordinator).
 
+### ADRs are `proposed` when the decision is taken, `accepted` when its work closes
+The ADR test applies wherever a decision is written; a design writes a `proposed` ADR, a decision outside a design
+goes straight to `accepted`, `auto` only ever writes `proposed`. Every close the user confirms sweeps the `proposed`
+ADRs whose `origin` names the closed subtree or its design. Skills only; the rule lives once in `knit`.
+- **Why:** a "graduate to an ADR later" step no workflow ran left lasting decisions buried in archived designs,
+  closed items and comments, so a fresh agent decided them again.
+- **Rejected:** a promotion checkpoint over all design decisions at archive / close (judgement every time, skipped
+  like the old step); a `knit verify` check for unpromoted decisions (most rightly fail the test, so it warns
+  forever); `kb add adr --from` (`--origin` covers it); an `ADR candidate:` comment tag (the `proposed` ADR is the
+  record).
+
 ### Grow-to-folder only for `feature` / `doc` / `source`; the folder must be a real entry
 A folder needs its `readme.md`; sub-docs need an existing folder-form parent (`kb split` first, no auto-split).
 `adr` / `log` / `idea` stay flat.
@@ -591,7 +602,7 @@ Latin-1 map.
 
 ### One binary: the SPA is embedded in the CLI, guarded by a publish-time size budget
 Vite `dist/` embedded as manifest resources; `CheckPublishBinarySize` warns at 35 MB, fails at 50 MB on every AOT publish.
-- **Why:** single-file distribution is the product promise; the gate sits in MSBuild so every local publish — and any future CI — inherits it.
+- **Why:** single-file distribution is the product promise; the gate sits in MSBuild so every local publish — and CI — inherits it.
 - **Rejected:** separate `knit-web` binary; SPA assets on disk beside the binary — both break single-file.
 
 ### The SPA is built by a plain MSBuild `Exec` target (`BuildSpa`), not SpaProxy
@@ -606,12 +617,89 @@ Incremental (Inputs/Outputs), skipped on design-time builds and `SkipNpmBuild`; 
 - **Rejected:** `TreatWarningsAsErrors` for all warnings — unrelated analyzer noise would block releases.
 
 ### Third-party license gaps are pinned by hand in `OVERRIDES`, never guessed
-`tools/gen-npm-notices.mjs` refuses an unresolved license; a dual license or a missing field gets an `OVERRIDES` entry.
+`tools/gen-notices.mjs` refuses an unresolved license; a dual license or a missing field gets an `OVERRIDES` entry.
 - **Why:** the notices ship inside the binary (`knit licenses`), so a wrong license is a wrong legal statement.
 - `dompurify` (`MPL-2.0 OR Apache-2.0`): Apache-2.0 elected — no file-level copyleft, and its text ships anyway
   for `@chevrotain/types`.
 - `khroma`: no `license` field in the lockfile, but it ships an MIT license file — a metadata gap, MIT applies.
 - **Rejected:** MPL-2.0 for `dompurify` (file-level copyleft obligations for no gain).
+
+### Publish flags live in the project files, not the workflow
+CI runs a plain `dotnet publish src/Knit.Cli/Knit.Cli.csproj -c Release -r <rid>`; `OptimizationPreference` stays default.
+- **Why:** a local publish is the same build as a released one. A CLI's runtime is I/O and parsing, so `Speed` would
+  cost size for no measurable gain.
+
+## Release
+
+### Releases come from CI only, on a `v*` tag push, after the full check matrix on that commit
+The release job runs only when every RID's leg passed; it creates the GitHub release with `gh release create`.
+- **Why:** one version is one commit for all binaries; a red test on any OS means no release, all-or-nothing.
+- **Rejected:** releasing from a local machine; automatic dev builds — nothing publishes without a tag.
+
+### Each RID builds on its own OS; Linux on `ubuntu-22.04`, `osx-x64` cross-arch from an arm64 Mac
+The full suite runs on four RIDs; `osx-x64` is build + publish only, its code tested on `osx-arm64`.
+- **Why:** Native AOT doesn't cross-compile between OSes. The Linux binary needs the build host's glibc or newer, so
+  the older image reaches more distros.
+
+### The version comes from the tag via MinVer; untagged builds read `X.Y.Z-dev.N`
+`MinVerAutoIncrement=minor`; the smoke step fails when `knit version` doesn't print the tag's version.
+- **Why:** no version number to bump or forget; an off-tag build can never claim a release version.
+- **Rejected:** a hard-coded `Version` in `Directory.Build.props`.
+
+### Prereleases are `-rc.N` / `-beta.N` only, never "Latest"; stable tags only on commits reachable from `main`
+The `matrix` job validates the tag before any runner starts. A prerelease may sit on any branch and gets no changelog
+section — its changes stay under `[Unreleased]`.
+- **Why:** other suffixes break semver order (`beta < rc < final`); `/releases/latest`, its download links and the
+  badge must keep pointing at the last stable.
+
+### A failed release is fixed by the next patch version, never in place
+A flaky leg is re-run; a code fix gets the next patch, built for every RID. A tag whose release never published may
+be deleted and set again.
+- **Why:** one version is one commit for all binaries; a published release is immutable anyway.
+
+### Release assets: one archive per RID with version-less names, plus `SHA256SUMS`
+`knit-<rid>.tar.gz` (`knit-win-x64.zip`) holds `knit` / `knit.exe`, `LICENSE`, `THIRD-PARTY-NOTICES.md`, flat.
+- **Why:** the command is `knit` on every OS and tar keeps the executable bit; `/releases/latest/download/<asset>` is a
+  stable link.
+- **Rejected:** bare binaries named `knit-<rid>` (every user renames them, a download loses the executable bit); the
+  version in the asset name (no stable latest link).
+
+### Releases are immutable
+Repository setting: a published release's assets and tag can't change; GitHub attaches a release attestation.
+- **Why:** `SHA256SUMS` sits in the same release, so on a mutable release it proves integrity, not that nobody swapped
+  a binary later — not even a stolen owner token can now. `v0.12.0` stays one commit forever.
+- **Rejected:** mutable releases — fixing in place is the one thing they add, and the next patch replaces that.
+
+### `main` takes changes through a PR with the five `check (<rid>)` jobs; `v*` tags are locked
+Rulesets; the owner bypasses `main` only for the release commit, and the tags only to delete an unpublished one.
+- **Why:** a check only exists after a push, so the PR is the vehicle for the check, not for review.
+
+### The `release` skill cuts a release in one run on `main`; the release commit and its tag push atomically
+Version proposed from the `[Unreleased]` categories; changelog roll + regenerated notices in one commit; the release
+job's gates run locally first; `git push --atomic origin main vX.Y.Z` under the owner bypass.
+- **Why:** a failed gate shows before anything is pushed; the tag run tests the release commit on every RID before
+  publishing. A project skill (`.claude/skills/`), not in `skills/` — that is the bundle shipped to consumers.
+- **Rejected:** a `release/vX.Y.Z` PR (a second run after the merge, and a squash merge changes the commit to tag); a
+  CI-status check before tagging (needs `gh`; a red tag run publishes nothing anyway).
+
+### Changelog entries are written with the change, under `[Unreleased]`
+Keep a Changelog; the `release` skill only turns the section into the version's — it writes no entries.
+- **Why:** the author of a change has the context; at release time it is gone.
+- **Rejected:** writing entries at release time from the git log.
+
+### `THIRD-PARTY-NOTICES.md` is regenerated per release, not per dependency change
+`gen-notices.mjs` covers NuGet (lock file + nuspec) and npm. `--check-licenses` runs per PR in `Knit.Web.Tests`;
+`--check` (file is current) only in the release job.
+- **Why:** a plain bump (Dependabot) passes without a manual commit, while a bad license still fails its PR; every
+  published binary embeds the text of its own dependencies.
+- **Rejected:** regenerating per PR (every patch bump needs a manual commit, Dependabot can't run the script);
+  generating at release without committing (the repo's file drifts from what ships).
+
+### NuGet audit gates every build; `npm audit` gates only the release
+High / critical advisories fail: NuGet via `WarningsAsErrors` under `CI=true`, npm via `--omit=dev --audit-level=high`.
+- **Why:** an advisory published overnight would turn every unrelated PR red; Dependabot security updates cover the
+  time in between.
+- **Rejected:** `npm audit` per PR.
 
 ## Testing
 

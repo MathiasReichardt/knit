@@ -24,7 +24,12 @@ public class TableWrapTests
         Assert.Equal(0, root.Run("set", id, "due=2026-08-15").ExitCode);
         Assert.Equal(0, root.Run("set", id, "priority=critical").ExitCode);
 
-        var r = root.Run("list", "--no-color");
+        // A standard 80-column terminal is narrow enough to squeeze `title`.
+        var width = Knit.Cli.Output.Out.WidthOverride;
+        Knit.Cli.Output.Out.WidthOverride = 80;
+        CliResult r;
+        try { r = root.Run("list", "--no-color"); }
+        finally { Knit.Cli.Output.Out.WidthOverride = width; }
         Assert.Equal(0, r.ExitCode);
         Assert.DoesNotContain("Authentica\n", r.Stdout);
         Assert.DoesNotContain("Authentica ", r.Stdout);

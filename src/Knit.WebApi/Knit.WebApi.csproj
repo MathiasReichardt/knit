@@ -56,8 +56,11 @@
       <_SpaDistFile Include="$(SpaSourceDir)\dist\**\*.*" />
     </ItemGroup>
     <ItemGroup>
+      <!-- The manifest generator splits on the OS separator only, as
+           RecursiveDir already uses: a fixed `\` or `/` leaves no `wwwroot`
+           folder on the other OS. -->
       <EmbeddedResource Include="@(_SpaDistFile)">
-        <Link>wwwroot/%(_SpaDistFile.RecursiveDir)%(_SpaDistFile.Filename)%(_SpaDistFile.Extension)</Link>
+        <Link>wwwroot$([System.IO.Path]::DirectorySeparatorChar)%(_SpaDistFile.RecursiveDir)%(_SpaDistFile.Filename)%(_SpaDistFile.Extension)</Link>
       </EmbeddedResource>
     </ItemGroup>
   </Target>

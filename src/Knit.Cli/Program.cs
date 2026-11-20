@@ -118,11 +118,14 @@ public static class Program
             args.Contains("--no-color") ||
             args.Contains("--json");
         if (!disable) return;
-        AnsiConsole.Console = AnsiConsole.Create(new AnsiConsoleSettings
+        AnsiConsole.Console = Out.Sized(AnsiConsole.Create(new AnsiConsoleSettings
         {
             Ansi = AnsiSupport.No,
             ColorSystem = ColorSystemSupport.NoColors,
             Out = new AnsiConsoleOutput(Console.Out),
-        });
+            // Spectre's CI enrichers (GitHub Actions, Azure Pipelines, …) would
+            // switch ANSI back on and change the width for piped output.
+            Enrichment = new ProfileEnrichment { UseDefaultEnrichers = false },
+        }));
     }
 }

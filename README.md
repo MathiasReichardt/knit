@@ -1,13 +1,15 @@
+# Knit
+
+[![CI](https://github.com/MathiasReichardt/knit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/MathiasReichardt/knit/actions/workflows/ci.yml?query=branch%3Amain)
+[![Latest release](https://img.shields.io/github/v/release/MathiasReichardt/knit?sort=semver)](https://github.com/MathiasReichardt/knit/releases/latest)
+[![License: MIT](https://img.shields.io/github/license/MathiasReichardt/knit)](LICENSE)
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/logo/logo-dark.svg">
     <img src="assets/logo/logo-bright.svg" alt="Knit logo" width="96">
   </picture>
 </p>
-
-# Knit
-
-[![License: MIT](https://img.shields.io/github/license/MathiasReichardt/knit)](LICENSE)
 
 Git-native task tracker and knowledge base. Items, ADRs, and design docs
 are plain markdown in your repo. Single binary CLI built for AI agents,
@@ -59,12 +61,12 @@ Roadmap in [design/roadmap.md](design/roadmap.md).
 Download the binary for your platform from the
 [releases page](https://github.com/MathiasReichardt/knit/releases):
 
-- Linux: `knit-linux-x64`
-- Windows: `knit-win-x64.exe`
-- macOS: `knit-osx-arm64`
+- Windows x64: `knit-win-x64.zip`
+- Linux: `knit-linux-x64.tar.gz`, `knit-linux-arm64.tar.gz`
+- macOS: `knit-osx-arm64.tar.gz` (Apple Silicon), `knit-osx-x64.tar.gz` (Intel)
 
-It is self-contained — no .NET or Node runtime to install. Make it executable
-(Linux/macOS) and put it on your PATH:
+Each holds one self-contained binary, `knit` / `knit.exe` — no .NET or Node
+runtime to install. Extract it onto your PATH:
 
 - Linux/macOS: `~/.local/bin/knit`
 - Windows: `%LOCALAPPDATA%\Programs\Knit\knit.exe`

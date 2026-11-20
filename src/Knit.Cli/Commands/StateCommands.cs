@@ -176,10 +176,7 @@ public static class StateCommands
             {
                 // Prompt UI on stderr, like `knit pick` — stdout stays
                 // capture-clean.
-                var ui = AnsiConsole.Create(new AnsiConsoleSettings
-                {
-                    Out = new AnsiConsoleOutput(Console.Error),
-                });
+                var ui = Out.Stderr();
                 string Label(Impediment i)
                 {
                     if (i.Row is null) return $"reason: {i.Text}";
@@ -358,7 +355,7 @@ public static class StateCommands
                 $"{Out.TitledPlain(ctx, item)} is a draft — approve it first with `knit approve {shortId}`",
                 ErrorCode.BadArgument, json);
 
-        var ui = AnsiConsole.Create(new AnsiConsoleSettings { Out = new AnsiConsoleOutput(Console.Error) });
+        var ui = Out.Stderr();
         try
         {
             if (ui.Confirm($"{Markup.Escape(item.Title)} is a draft. Approve and start it?", false)) return null;

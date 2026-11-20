@@ -99,11 +99,11 @@ lives in this skill.
 ### 3. Scope
 
 Only touch the design doc and (when planning) Knit items via the
-CLI. Reading project code is encouraged. Don't write KB entries
-during design — that's work for the `knit-kb` skill, and the authoring discipline
-rule (don't pre-document) makes most "let me write the ADR now"
-impulses premature. ADRs land **as decisions are taken**, often
-during execution, not during planning.
+CLI. Reading project code is encouraged. The one KB write during
+design is a `proposed` ADR for a decision that passes the ADR test
+([`knit`](../knit/SKILL.md) skill > ADR vs design `## Design Decisions`);
+feature docs and the rest wait for the work (`knit-kb` skill > Authoring
+discipline).
 
 ## Design document structure
 
@@ -137,7 +137,8 @@ Added on demand, the first time each has content:
 - **Design Decisions** — significant decisions with context +
   alternatives + rationale, once `Approach` outgrows carrying them
   inline. Superseded entries stay, marked `[superseded]` with a
-  pointer to the new decision.
+  pointer to the new decision. A decision that passes the ADR test is a
+  one-line pointer here to its `proposed` ADR.
 - **Milestones** — see below. Omit for short designs.
 - **Sources** — references that informed the design. Each entry is
   a one-liner with link or KB ref (`source:<id>`).
@@ -176,7 +177,7 @@ skill.
 *current plan*; the design doc holds plan *history* (see
 [`knit`](../knit/SKILL.md) skill > Glossary). Superseded approaches stay
 in the design's `## Design Decisions` with rationale; lasting
-decisions become ADRs. Don't expect to reconstruct "we used to plan
+decisions are ADRs. Don't expect to reconstruct "we used to plan
 X" from items alone — that's by design.
 
 ### Hierarchy rule
@@ -531,7 +532,10 @@ When the design has shipped and the linked items are all `done`:
   the design iterates and you're keeping each cycle's snapshot.
 - Markdown links to the doc, and its own relative links, are repointed;
   `design:<slug>` refs keep resolving to the archive.
-- Confirm with the user before archiving. The items stay in
+- Confirm with the user before archiving, then sweep the design's
+  `proposed` ADRs ([`knit`](../knit/SKILL.md) skill > ADR vs design
+  `## Design Decisions`). Dropping a design sweeps them too, as
+  `rejected`. The items stay in
   `.knit/items/` (closed); they're queryable forever via
   `knit list --under <epic-id>`.
 
@@ -546,9 +550,8 @@ subcommand here behaves wrong, log it via the feedback loop — see
 
 - **Execute items.** That's the [`knit-work`](../knit-work/SKILL.md) skill.
   Use `knit next --under <epic-id>` to pick the next ready item.
-- **Write KB entries.** That's the [`knit-kb`](../knit-kb/SKILL.md) skill.
-  Design decisions land as ADRs **during execution** (when the
-  decision is taken), not during design.
+- **Write KB entries** beyond `proposed` ADRs. That's the
+  [`knit-kb`](../knit-kb/SKILL.md) skill.
 - **Edit code.** Designs are markdown + items only. Reading code is
   encouraged; writing it isn't this skill's job.
 - **Auto-create acceptance criteria.** Items get acceptance criteria

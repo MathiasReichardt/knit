@@ -26,9 +26,10 @@ choices.
 > `knit <cmd> --help`.
 >
 > **Authoring discipline** — don't document what isn't implemented yet;
-> see [`knit-kb`](../knit-kb/SKILL.md) skill > Authoring discipline. ADRs
-> and feature docs land **as decisions are taken** during execution,
-> not as scaffolding before the code lands.
+> see [`knit-kb`](../knit-kb/SKILL.md) skill > Authoring discipline.
+> Feature docs land with the work, not as scaffolding before it; ADR
+> timing is [`knit`](../knit/SKILL.md) skill > ADR vs design
+> `## Design Decisions`.
 
 ## Subcommands
 
@@ -269,10 +270,10 @@ you don't know; don't guess one.
   - **Implementation choice that's already reflected in the code +
     item body** → no separate record needed. The code is the
     record; the body describes the current plan.
-  - **Binds later work and was a real choice** → offer an ADR
-    (`knit kb add adr "<title>"`, test in [`knit-kb`](../knit-kb/SKILL.md) skill).
-    ADRs are past-tense — offer the moment the decision is made; in
-    `auto`, comment the candidate on the item instead.
+  - **Passes the ADR test** (binds later work, was a real choice) →
+    offer an ADR the moment the decision is made: `accepted`, or
+    `proposed` in `auto` ([`knit`](../knit/SKILL.md) skill > ADR vs
+    design `## Design Decisions`).
   - **Design deviation** → update the design doc's
     `## Design Decisions` section (see
     [`knit-design`](../knit-design/SKILL.md) skill) **and** edit the
@@ -310,7 +311,10 @@ you don't know; don't guess one.
 - The reviewer (the user or an agent) runs `knit done`, or `knit start`
   to send it back with the findings in a `knit comment`. `next` /
   `ready` skip `review` — it isn't the implementer's work any more.
-- On user confirm: `knit done <id>`. State → `done`. Blocks do **not**
+- On user confirm: `knit done <id>`, then sweep the `proposed` ADRs of
+  the item and its subtree ([`knit`](../knit/SKILL.md) skill > ADR vs
+  design `## Design Decisions`); `knit dismiss` sweeps them as
+  `rejected`. State → `done`. Blocks do **not**
   clear: `done` / `dismiss` list the open items still blocked by this one,
   each with its fix (`knit unblock` when this was its only impediment,
   else `knit unlink <blocked> <this>`). Resolve each one the work actually
@@ -409,7 +413,10 @@ matters:
   - a **`feature` / `epic` / `project`** never closes in `auto`: once
     its children are done and its criteria met, `knit submit` it to
     `review` and go on. These carry judgment a human owns;
-  - the run's final report lists every item left in `review`.
+  - the run's final report lists every item left in `review`;
+  - a decision that passes the ADR test either hits stop (a) or becomes
+    a `proposed` ADR, never an `accepted` one: it is swept when the
+    user confirms the close of the run's parent.
 
 ### Live state is the progress signal
 
@@ -480,8 +487,8 @@ When a stop condition triggers:
 2. **Capture the outcome** on the current item:
    - Item finished, waiting for acceptance → `knit submit <id>`.
    - Routine pause / question → `knit comment <id> "..."`.
-   - Lasting decision once resolved → `knit kb add adr "..."` (an
-     ADR records the decision, past tense, after it's taken).
+   - Decision resolved with the user that passes the ADR test →
+     `knit kb add adr "..."`, `proposed`.
    - Real blocker → `knit block <id> --by <other-id>` (create the
      blocker as a tracked item first if it isn't already).
 3. **Prompt the user** with the trigger, the current item, and a
@@ -536,9 +543,9 @@ project content (item titles, file paths, code) in entries.
   [`knit-design`](../knit-design/SKILL.md) skill. If the work needs a
   design decision (stop condition (a)), pause and route there.
 - **Author KB entries proactively.** That's
-  [`knit-kb`](../knit-kb/SKILL.md) skill. Capture ADRs *as decisions
-  land* during execution; don't pre-scaffold feature docs for work
-  that isn't shipped yet.
+  [`knit-kb`](../knit-kb/SKILL.md) skill. Capture ADRs as decisions
+  are taken; don't pre-scaffold feature docs for work that isn't
+  shipped yet.
 - **Edit the design doc routinely.** Design deviations get a
   comment on the item + a Design Decisions entry in the design;
   per-item progress stays in the items, not the design.

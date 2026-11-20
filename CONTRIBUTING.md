@@ -19,7 +19,7 @@ dotnet publish src/Knit.Cli/Knit.Cli.csproj \
 kicks in on `dotnet publish`. The first build runs `npm ci` and the Vite build
 in `src/Knit.Web` and embeds the result; `dotnet clean` removes the SPA build
 output but keeps `node_modules`. The `Knit.Web.Tests` bridge runs the SPA's
-vitest suite, its eslint gate and the third-party-notices check.
+vitest suite, its eslint gate and the dependency license check.
 
 For the web UI's development loop (HMR, standalone host, build details) see
 [src/Knit.WebApi.Host/README.md](src/Knit.WebApi.Host/README.md).
@@ -63,11 +63,18 @@ and the AOT toolchain.
 ## Dependencies and notices
 
 Only permissively licensed dependencies (MIT, Apache-2.0, BSD, ISC, Unlicense,
-MPL-2.0). A dependency change updates
-[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) in the same change: the npm
-half is generated — run `node tools/gen-npm-notices.mjs` (`dotnet test` fails
-if it's stale); the NuGet table is maintained by hand, and a NuGet change also
+MPL-2.0); `dotnet test` fails on anything else, or on a license it can't
+resolve — pin those in the `OVERRIDES` of `tools/gen-notices.mjs`.
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) is regenerated for each
+release, so a dependency change doesn't touch it. A NuGet change still
 regenerates [nix-deps.json](nix-deps.json) (see [Nix](#nix)).
+
+## Changelog
+
+A change a user can notice — CLI, `--json` output, on-disk format, `knit web`,
+the shipped skills — adds its entry to [CHANGELOG.md](CHANGELOG.md) under
+`## [Unreleased]`, in the same PR. Lead with the effect, 1–3 lines; refactors,
+tests and CI get none.
 
 ## Dogfooding: PM simulation
 

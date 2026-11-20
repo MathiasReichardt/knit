@@ -74,8 +74,8 @@ Find the row, then load the named skill for the mechanics.
 | Several features (or related bugfixes) that cohere into a whole > parts | item: **epic** | `knit-design` or `knit add` |
 | A defect in something delivered or in progress (code, a document, an output) | item: **bug** | `knit-work` skill |
 | A step of work with no standalone value (may have subtasks) | item: **task** | `knit-work` |
-| A decision just **made** that binds later work and was a real choice | **ADR** (`adr:`) | `knit-kb` skill |
-| A decision made *while designing* (may still be superseded) | design doc `## Design Decisions` | `knit-design` |
+| A decision that binds later work and was a real choice (the ADR test) | **ADR** (`adr:`), `proposed` while designing | `knit-kb` skill |
+| A design decision that fails the ADR test | design doc `## Design Decisions` | `knit-design` |
 | An external doc I'll want to point at later | **source** (`source:`) | `knit-kb` |
 | How a shipped feature works (outlives any one item) | **feature doc** (`feature:`) | `knit-kb` |
 | A cross-cutting living doc (architecture, glossary) | **doc** (`doc:`) | `knit-kb` |
@@ -113,12 +113,26 @@ cross-cutting, or spans milestones** and benefits from thinking recorded
 before the work — it scaffolds the item subtree for you. For small or
 one-off work, skip straight to `knit add`.
 
-**ADR vs design `## Design Decisions`.** Same decision, two homes by
-lifecycle: while a design cycle is open, decisions live in the design
-doc (where superseded approaches stay as history); once a decision is
-*settled and lasting*, it graduates to an ADR — past tense, one
-decision per record. Don't pre-write ADRs during design (see
-[`knit-kb`](../knit-kb/SKILL.md) skill > Authoring discipline).
+**ADR vs design `## Design Decisions`.** The one rule for when an ADR
+is written; the other skills point here.
+
+- **The ADR test applies wherever a decision is written** — design, item
+  body, comment ([`knit-kb`](../knit-kb/SKILL.md) skill > Capture a
+  decision). Most decisions fail it and stay where they are written.
+- **While designing:** a passing decision becomes a `proposed` ADR
+  (`--origin design:<slug>`) once the user confirms; `## Design Decisions`
+  keeps a one-line pointer to it.
+- **Outside a design:** a passing decision becomes an ADR (`--origin
+  item:<id>`) once the user confirms, set straight to `accepted`. In
+  `auto` it stays `proposed`, with no confirmation; its origin also names
+  the design when the item sits under one.
+- **`proposed` is edited in place** until swept; `accepted` is never
+  edited, only superseded.
+- **Sweep at every close the user confirms** — `knit done` on any item,
+  `knit dismiss`, archiving or dropping a design: `knit kb list --bucket
+  adr --status proposed --json`, keep those whose `origin` names the
+  closed item, any item in its subtree, or its design; with the user, set
+  each `accepted` or `rejected`. A dismiss or drop rejects them.
 
 ## Orientation
 

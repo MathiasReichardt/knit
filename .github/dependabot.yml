@@ -1,0 +1,38 @@
+version: 2
+updates:
+  # THIRD-PARTY-NOTICES.md is regenerated per release, so a bump doesn't touch it;
+  # dotnet test still fails one that brings in a non-permissive license.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    groups:
+      nuget:
+        patterns: ["*"]
+        update-types: [minor, patch] # a major comes as its own PR
+
+  - package-ecosystem: npm
+    directory: /src/Knit.Web
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    groups:
+      npm-production:
+        dependency-type: production
+        update-types: [minor, patch]
+      npm-development:
+        dependency-type: development
+        update-types: [minor, patch]

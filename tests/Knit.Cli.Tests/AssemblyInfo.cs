@@ -23,8 +23,33 @@ public static class TestEnvironment
     [System.Runtime.CompilerServices.ModuleInitializer]
     public static void Isolate()
     {
+        // macOS: TMPDIR lies under /var, a symlink to /private/var. The CLI
+        // reads the working directory back resolved, so a fixture path would
+        // never equal the root it reports.
+        if (OperatingSystem.IsMacOS())
+            Environment.SetEnvironmentVariable("TMPDIR", Resolved(Path.GetTempPath()));
+
         ConfigHome = Path.Combine(Path.GetTempPath(), $"knit-cli-cfg-{Guid.NewGuid():N}");
         Directory.CreateDirectory(ConfigHome);
         Environment.SetEnvironmentVariable("KNIT_CONFIG_HOME", ConfigHome);
+
+        // Wide enough that no line wraps — some messages carry two absolute
+        // temp paths, and a runner's are long — so assertions don't depend on
+        // the width of the console the tests run in (none on CI → 80).
+        Knit.Cli.Output.Out.WidthOverride = 1000;
+    }
+
+    /// <summary><paramref name="path"/> with every symlinked segment resolved.</summary>
+    private static string Resolved(string path)
+    {
+        var full = Path.GetFullPath(path);
+        var current = Path.GetPathRoot(full)!;
+        foreach (var segment in full[current.Length..].Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries))
+        {
+            current = Path.Combine(current, segment);
+            if (new DirectoryInfo(current).ResolveLinkTarget(returnFinalTarget: true) is { } target)
+                current = target.FullName;
+        }
+        return current + Path.DirectorySeparatorChar;
     }
 }

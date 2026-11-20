@@ -12,17 +12,22 @@ the single source of truth; consult it when shaping CLI / web / data behavior,
 and don't duplicate the definition here.
 
 **Status:** Milestones 1a (CLI) and 1c (local web UI) complete. CLI is
-dogfoodable end-to-end, AOT publish verified on win-x64. `knit web`
+dogfoodable end-to-end, AOT publish verified in CI on win-x64,
+linux-x64, linux-arm64, osx-arm64 and osx-x64. `knit web`
 serves the React SPA in-process over loopback. The M1-polish wave added
 NanoID ids, due dates, priority, tags, slates, the deadline timeline
 (CLI + SPA), and projects/milestones/todos (unified tree). Open work is in
 [design/planned.md](design/planned.md); milestones in
 [design/roadmap.md](design/roadmap.md).
 
-**CI is only the nix build** (`.github/workflows/nix.yml`: `nix build` +
-`knit --version`); it runs no tests. The solution-wide gate is `dotnet test`: the `Knit.Web.Tests` bridge folds
-the SPA's vitest suite *and* its eslint gate into "Run All Tests" (see
-`tests/Knit.Web.Tests` below).
+**CI** — [.github/workflows/ci.yml](.github/workflows/ci.yml) runs on every
+PR and push to `main`: `dotnet test` plus an AOT publish and `knit version`
+smoke run for every RID. A `v*` tag push runs the same, then a release job
+publishes the GitHub release. The solution-wide gate is `dotnet test`: the
+`Knit.Web.Tests` bridge folds the SPA's vitest suite *and* its eslint gate
+into "Run All Tests" (see `tests/Knit.Web.Tests` below). The version comes
+from the latest `v*` tag via MinVer — there is no version number to bump.
+
 
 ## Design docs
 
@@ -109,9 +114,8 @@ All design docs live under [design/](design/).
   npm scripts so a solution-wide "Run All Tests" / `dotnet test` covers
   the SPA too: one `[Fact]` runs `npm test` (vitest), a second runs
   `npm run lint` (eslint) — keep lint green or `dotnet test` goes red.
-  A third runs `node tools/gen-npm-notices.mjs --check`, so a dependency
-  change that isn't reflected in `THIRD-PARTY-NOTICES.md` fails the build
-  (the notices are embedded in the CLI binary — see `knit licenses`).
+  A third runs `node tools/gen-notices.mjs --check-licenses`, so a
+  dependency with an unresolved or non-permissive license fails the build.
   The SPA's own specs live
   in `src/Knit.Web/src/**/*.test.ts`. **The SPA is unit-testable** —
   new pure logic (`src/lib/`, `src/stores/`) should get a co-located
@@ -131,11 +135,6 @@ All design docs live under [design/](design/).
 - **Every release gets a `v<version>` tag** on the commit its binaries
   were built from (e.g. `git tag v0.11.0 <sha>`) — that tag is how an
   old release is rebuilt. After a version bump, remind the user to tag.
-- **`flake.nix` builds the AOT binary** with `nix build`; the SPA is a
-  separate npm derivation (no network in the sandbox, so `SkipNpmBuild=true`).
-  A NuGet package change must regenerate `nix-deps.json`
-  (`nix build .#default.fetch-deps && ./result nix-deps.json`) or the nix CI
-  build fails.
 - New CLI behavior tests go in `tests/Knit.Cli.Tests` with
   `[Collection(nameof(CliCollection))]` and use the `TempKnitRoot`
   fixture (auto-cleanup, captures stdout + stderr).
@@ -146,6 +145,31 @@ All design docs live under [design/](design/).
   source), emitting a `simulation-findings.md`. Use it to shake out
   skill gaps / wrong-behaviour the unit suite can't. Runs against a
   throwaway repo, never this one.
+
+## Changelog entries
+
+[Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/): `## [Unreleased]`,
+then version / date headings; Added / Changed / Deprecated / Removed / Fixed /
+Security. Written for someone deciding whether to upgrade, or diagnosing
+behaviour after they did — the why and the how go in the commit, the design doc
+or `decisions.md`.
+
+- **Lead with the effect**, not the mechanism: what changed for a user, in the
+  first clause.
+- **1–3 lines.** More only where the reader must act (breaking change,
+  migration, new required setting), never more than ~6. A new config key may
+  spend more to list the keys and defaults.
+- **Breaking changes** lead the entry: what stops working, and what to do.
+- **Fixes**: the symptom the user saw, then the trigger — enough to tell "was I
+  affected?", not the root cause.
+- **One entry per user-visible change** — CLI, `--json` shape, on-disk format,
+  `knit web`, the shipped skills, release assets. Refactors, tests, CI and
+  internal renames get none.
+- **Name only what the reader can touch** — commands, flags, config keys,
+  `--json` keys, file formats. Not classes, methods or source paths.
+- **No justification.** One clause of context is fine when it prevents a wrong
+  assumption. If a line answers "how" or "why is that right", it belongs in the
+  commit.
 
 ## Invariants worth remembering
 
@@ -254,14 +278,13 @@ All design docs live under [design/](design/).
   maintenance. If you can't find a good permissive option — or the
   best fit is obscure — ask the user before adding it instead of
   silently picking the closest match.
-- **A shipped dependency change updates
-  [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) in the same change.**
-  npm: rerun `node tools/gen-npm-notices.mjs` (`dotnet test` fails if stale);
-  a dual license or missing license field goes into the script's `OVERRIDES`.
-  NuGet: the table is hand-maintained and **nothing checks it** — reconcile it
-  with `dotnet list package --include-transitive` and each `.nuspec` on any
-  package or framework reference change to a shipped project. A dependency that
-  ships a `NOTICE` file must be reproduced (Apache-2.0 §4(d)).
+- **[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) is regenerated per
+  release, not per dependency change** — `node tools/gen-notices.mjs` (NuGet +
+  npm), embedded in the binary (`knit licenses`); the release job refuses a
+  stale file. A dependency change doesn't touch it, but a dual license or
+  missing license field goes into the script's `OVERRIDES` in the same change
+  (`dotnet test` fails until then). A dependency that ships a `NOTICE` file
+  must be reproduced (Apache-2.0 §4(d)).
 - **Examples and fixtures use invented, neutral names** — in tests, skills,
   docs and design examples alike. Never a real customer, employer, colleague,
   internal library or private skill, and no real domain specifics (spec titles,
@@ -278,6 +301,12 @@ All design docs live under [design/](design/).
   expected, not a bug. **This repo does not use Knit on itself:** there
   is no `.knit/` here, design docs live in `design/`, and the documented
   `knit ...` commands are not meant to be run against this repo.
+- **Every user-visible change adds its [CHANGELOG.md](CHANGELOG.md) entry
+  in the same change**, under `## [Unreleased]` — a change without one is
+  unfinished, like one without its skill update. Written now, while the
+  context is at hand; the `release` skill only turns the section into the
+  version's and writes no entries. What counts and how to write it:
+  [Changelog entries](#changelog-entries).
 - **Keep skills in sync with the CLI.** The skill bundle above is the
   agent-facing contract for the CLI. Any change to command behaviour,
   flags, output shape, gotchas, or workflow assumptions must be

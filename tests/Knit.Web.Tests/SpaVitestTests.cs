@@ -17,19 +17,19 @@ public class SpaVitestTests
     [Fact]
     public void Spa_lint_clean() => RunNpmScript("lint", "eslint");
 
-    // THIRD-PARTY-NOTICES.md is embedded in the CLI binary and is a legal
-    // artifact, so a dependency change that isn't reflected there is a defect,
-    // not a chore. Nothing else would notice.
+    // Only the licenses, not the file: THIRD-PARTY-NOTICES.md is regenerated per
+    // release (the release job runs --check), so a plain bump passes, while a
+    // copyleft or unresolved license still fails the PR that brings it in.
     [Fact]
-    public void Third_party_notices_match_the_lockfile()
+    public void Shipped_dependencies_are_permissively_licensed()
     {
         var repoRoot = LocateRepoRoot();
         Assert.True(
             Directory.Exists(Path.Combine(repoRoot, "src", "Knit.Web", "node_modules")),
             "node_modules missing. Run `npm install` in src/Knit.Web first.");
 
-        Run("node tools/gen-npm-notices.mjs --check", repoRoot,
-            "node tools/gen-npm-notices.mjs --check");
+        Run("node tools/gen-notices.mjs --check-licenses", repoRoot,
+            "node tools/gen-notices.mjs --check-licenses");
     }
 
     private static void RunNpmScript(string script, string tool)
