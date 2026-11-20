@@ -1,0 +1,72 @@
+[
+  {
+    "pname": "FunicularSwitch",
+    "version": "6.5.0",
+    "hash": "sha256-d0yMMNdv6i0B1fPztW2rYqQl+h7KOOZ/y90xE29jp90="
+  },
+  {
+    "pname": "FunicularSwitch.Analyzers",
+    "version": "1.0.0",
+    "hash": "sha256-4Z+kH5mFTWN8KRD/WBA0w/7JJSeLCLr+9gGvcWjuwi0="
+  },
+  {
+    "pname": "FunicularSwitch.Generators",
+    "version": "4.6.0",
+    "hash": "sha256-Sied9BSAq7js69nOCd4xeOe3x9x0DdPmCBbRuzI+WMo="
+  },
+  {
+    "pname": "Microsoft.CodeAnalysis.Analyzers",
+    "version": "3.3.4",
+    "hash": "sha256-qDzTfZBSCvAUu9gzq2k+LOvh6/eRvJ9++VCNck/ZpnE="
+  },
+  {
+    "pname": "Microsoft.CodeAnalysis.Common",
+    "version": "4.11.0",
+    "hash": "sha256-cX/xgM0VmS+Bsu63KZk2ofjFOOy1mzI+CCVEY6kI+Qk="
+  },
+  {
+    "pname": "Microsoft.CodeAnalysis.CSharp",
+    "version": "4.11.0",
+    "hash": "sha256-E9jEOjp9g/CFecsc5/QfRKOPXMRpSw0Tf79XsRgL+Mk="
+  },
+  {
+    "pname": "Microsoft.Extensions.FileProviders.Abstractions",
+    "version": "10.0.9",
+    "hash": "sha256-slMiJSmykMXcy0pu/uvoCaOw7BiyBUZQWZ216ERhZok="
+  },
+  {
+    "pname": "Microsoft.Extensions.FileProviders.Embedded",
+    "version": "10.0.9",
+    "hash": "sha256-5jXALOPO4m+f1LHFlG95Sk2ouibgKab6j2bsdKXwrk8="
+  },
+  {
+    "pname": "Microsoft.Extensions.Primitives",
+    "version": "10.0.9",
+    "hash": "sha256-WEPtmlEexm6QSFR4ITlBHuUD5/bqMfecOxFe5hkbAPU="
+  },
+  {
+    "pname": "MinVer",
+    "version": "8.0.0",
+    "hash": "sha256-NemGISYiewBxuk+9TZ16j4cB1bD4fJrXK7TPklGaHEw="
+  },
+  {
+    "pname": "Spectre.Console",
+    "version": "0.57.1",
+    "hash": "sha256-yYXIEkhEfbLoHe4WtiXupKtPncOvctuXMfDnX5CjlTM="
+  },
+  {
+    "pname": "Spectre.Console.Ansi",
+    "version": "0.57.1",
+    "hash": "sha256-zd7sKQX5syBTO0fE4a6kpXvuAZMf1SSCmi6JjMEtois="
+  },
+  {
+    "pname": "System.CommandLine",
+    "version": "2.0.9",
+    "hash": "sha256-3v9Man1oj9kOhDwm1+9VWseFEL5Zkrtzcw9WuKt2vwE="
+  },
+  {
+    "pname": "System.IO.Hashing",
+    "version": "10.0.9",
+    "hash": "sha256-DjQNrB0BGxnzZ2zE72C2E94xRFmcJLsM3sbLbiQOHPs="
+  }
+]

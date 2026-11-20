@@ -75,6 +75,9 @@ Keeping the binary next to a project instead? Name the folder `.knit-bin`
 (and gitignore it), never `.knit` — that name marks a knit repo, so a directory
 of binaries sitting where the tool looks for a tracker is confusing at best.
 
+With Nix flakes: add `github:MathiasReichardt/knit` as a flake input — see
+[INSTALL.md](INSTALL.md#nix-flakes).
+
 Full steps — PATH, macOS quarantine, skills, updating — in
 [INSTALL.md](INSTALL.md). Until the first release is published, build the binary
 from source — see [CONTRIBUTING.md](CONTRIBUTING.md).

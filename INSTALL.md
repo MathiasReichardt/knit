@@ -85,6 +85,26 @@ reachable from System Settings → Privacy & Security after the first refusal).
 A binary you copied over SSH/scp or built yourself is never quarantined — the
 tag only comes from the download.
 
+### Nix (flakes)
+
+No download, no glibc or quarantine caveats — the flake builds the binary:
+
+```bash
+nix run github:MathiasReichardt/knit -- --version   # try without installing
+nix shell github:MathiasReichardt/knit              # knit on PATH for this shell
+```
+
+To install, add it as an input to your NixOS or home-manager flake and use its
+package; `nix flake update knit` updates it:
+
+```nix
+inputs = {
+  knit.url = "github:MathiasReichardt/knit";
+};
+# NixOS:        environment.systemPackages = [ inputs.knit.packages.${pkgs.system}.default ];
+# home-manager: home.packages              = [ inputs.knit.packages.${pkgs.system}.default ];
+```
+
 ### Verify
 
 `knit --version` prints the version. Keeping the binary next to a project

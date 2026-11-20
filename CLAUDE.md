@@ -28,6 +28,7 @@ publishes the GitHub release. The solution-wide gate is `dotnet test`: the
 into "Run All Tests" (see `tests/Knit.Web.Tests` below). The version comes
 from the latest `v*` tag via MinVer — there is no version number to bump.
 
+
 ## Design docs
 
 All design docs live under [design/](design/).
@@ -131,10 +132,9 @@ All design docs live under [design/](design/).
 - AOT publish on Windows needs the VS 2022 Developer PowerShell — see
   [CONTRIBUTING.md](CONTRIBUTING.md) > AOT on Windows. Don't try plain PowerShell;
   `link.exe` won't be on PATH.
-- **Releases go through the `release` skill**
-  ([.claude/skills/release/SKILL.md](.claude/skills/release/SKILL.md)):
-  version, changelog, notices, local gates, tag. Pushing the `v*` tag is the
-  release — CI builds and publishes, never a local machine.
+- **Every release gets a `v<version>` tag** on the commit its binaries
+  were built from (e.g. `git tag v0.11.0 <sha>`) — that tag is how an
+  old release is rebuilt. After a version bump, remind the user to tag.
 - New CLI behavior tests go in `tests/Knit.Cli.Tests` with
   `[Collection(nameof(CliCollection))]` and use the `TempKnitRoot`
   fixture (auto-cleanup, captures stdout + stderr).
