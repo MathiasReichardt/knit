@@ -10,8 +10,8 @@
     <ApplicationIcon>..\..\assets\logo\logo-background.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.CommandLine" Version="2.0.9" />
-    <PackageReference Include="Spectre.Console" Version="0.57.1" />
+    <PackageReference Include="System.CommandLine" Version="2.0.15" />
+    <PackageReference Include="Spectre.Console" Version="0.57.2" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Knit.Cli.Tests" />
