@@ -45,6 +45,11 @@
     "hash": "sha256-WEPtmlEexm6QSFR4ITlBHuUD5/bqMfecOxFe5hkbAPU="
   },
   {
+    "pname": "MinVer",
+    "version": "8.0.0",
+    "hash": "sha256-NemGISYiewBxuk+9TZ16j4cB1bD4fJrXK7TPklGaHEw="
+  },
+  {
     "pname": "Spectre.Console",
     "version": "0.57.1",
     "hash": "sha256-yYXIEkhEfbLoHe4WtiXupKtPncOvctuXMfDnX5CjlTM="

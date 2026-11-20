@@ -17,7 +17,9 @@
     in
     {
       packages = forAllSystems (pkgs: rec {
-        default = pkgs.callPackage ./package.nix { };
+        default = pkgs.callPackage ./package.nix {
+          rev = self.shortRev or self.dirtyShortRev or "unknown";
+        };
         spa = default.spa;
       });
 

@@ -6,12 +6,13 @@
   importNpmLock,
   dotnetCorePackages,
   zlib,
+  git,
+  rev ? "unknown",
 }:
 
 let
-  version = builtins.head (
-    builtins.match ".*<Version>([^<]+)</Version>.*" (builtins.readFile ./Directory.Build.props)
-  );
+  # MinVer owns the binary's version (v* tags); the sandbox has no .git.
+  version = "0-unstable-${rev}";
   sdk = dotnetCorePackages.sdk_10_0;
   # nixpkgs only ships a working ILCompiler on Linux.
   aot = sdk.hasILCompiler && !stdenv.hostPlatform.isDarwin;
@@ -42,7 +43,8 @@ buildDotnetModule {
   dotnet-sdk = sdk;
   dotnet-runtime = if aot then null else dotnetCorePackages.aspnetcore_10_0;
   selfContainedBuild = aot;
-  nativeBuildInputs = lib.optional aot stdenv.cc;
+  # MinVer fails without git on PATH, even when it then finds no repo.
+  nativeBuildInputs = [ git ] ++ lib.optional aot stdenv.cc;
   buildInputs = lib.optional aot zlib;
   # The SPA is built above; BuildSpa's npm ci has no network in the sandbox.
   dotnetFlags = [ "-p:SkipNpmBuild=true" ] ++ lib.optional (!aot) "-p:PublishAot=false";
