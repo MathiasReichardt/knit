@@ -21,20 +21,21 @@ Scope:
 - No dependency in either tree ships a `NOTICE` file, so there is nothing to
   reproduce under Apache-2.0 §4(d).
 
-The npm section is generated — **don't hand-edit it**. After any dependency
-change:
+Both lists are generated — **don't hand-edit them**. The NuGet list is the
+resolved closure of the shipped CLI (`src/Knit.Cli/packages.lock.json`, build-only
+packages excluded), each with the license, copyright and project URL from its
+`.nuspec`. They are regenerated for every release:
 
 ```bash
-node tools/gen-npm-notices.mjs           # rewrite the section
-node tools/gen-npm-notices.mjs --check   # fail if stale (CI)
+node tools/gen-notices.mjs                   # rewrite both sections
+node tools/gen-notices.mjs --check-licenses  # every dependency is permissive
+node tools/gen-notices.mjs --check           # fail if stale
 ```
 
-It reads each package's own license file for the copyright line, and refuses to
-run if a package's license can't be resolved. Dual-licensed packages and
-metadata gaps are pinned in the script's `OVERRIDES`, with the reasoning in
-[design/decisions.md](design/decisions.md) > Build & packaging. The .NET table is short and
-hand-maintained from `dotnet list package --include-transitive` plus each
-package's `.nuspec`.
+It reads each npm package's own license file for the copyright line, and refuses
+to run if a license can't be resolved or isn't permissive. Dual-licensed packages
+and metadata gaps are pinned in the script's `OVERRIDES`, with the reasoning in
+[design/decisions.md](design/decisions.md) > Build & packaging.
 
 `knit licenses` prints this file from inside the binary, so the notices travel
 with the executable rather than depending on this repo.
@@ -43,19 +44,23 @@ with the executable rather than depending on this repo.
 
 ## .NET (NuGet)
 
-All MIT. Licenses and copyright lines taken from each package's `.nuspec`.
+<!-- nuget-list:start -->
 
 | Package | Version | License | Copyright | Project |
 |---|---|---|---|---|
-| Spectre.Console | 0.57.1 | MIT | Patrik Svensson, Phil Scott, Nils Andresen, Cédric Luthi | https://github.com/spectreconsole/spectre.console |
-| Spectre.Console.Ansi | 0.57.1 | MIT | Patrik Svensson, Phil Scott, Nils Andresen, Cédric Luthi | https://github.com/spectreconsole/spectre.console |
-| System.CommandLine | 2.0.9 | MIT | © Microsoft Corporation | https://github.com/dotnet/command-line-api |
 | FunicularSwitch | 6.5.0 | MIT | bluehands GmbH & Co.mmunication KG | https://github.com/bluehands/Funicular-Switch |
 | FunicularSwitch.Analyzers | 1.0.0 | MIT | bluehands GmbH & Co.mmunication KG | https://github.com/bluehands/Funicular-Switch |
-| System.IO.Hashing | 10.0.9 | MIT | © Microsoft Corporation | https://dot.net/ |
-| Microsoft.Extensions.FileProviders.Embedded | 10.0.9 | MIT | © Microsoft Corporation | https://asp.net/ |
-| Microsoft.Extensions.FileProviders.Abstractions | 10.0.9 | MIT | © Microsoft Corporation | https://dot.net/ |
-| Microsoft.Extensions.Primitives | 10.0.9 | MIT | © Microsoft Corporation | https://dot.net/ |
+| Microsoft.Extensions.FileProviders.Abstractions | 10.0.9 | MIT | © Microsoft Corporation. All rights reserved. | https://dot.net/ |
+| Microsoft.Extensions.FileProviders.Embedded | 10.0.9 | MIT | © Microsoft Corporation. All rights reserved. | https://asp.net/ |
+| Microsoft.Extensions.Primitives | 10.0.9 | MIT | © Microsoft Corporation. All rights reserved. | https://dot.net/ |
+| Spectre.Console | 0.57.1 | MIT | Patrik Svensson, Phil Scott, Nils Andresen, Cédric Luthi | https://github.com/spectreconsole/spectre.console |
+| Spectre.Console.Ansi | 0.57.1 | MIT | Patrik Svensson, Phil Scott, Nils Andresen, Cédric Luthi | https://github.com/spectreconsole/spectre.console |
+| System.CommandLine | 2.0.9 | MIT | © Microsoft Corporation. All rights reserved. | https://github.com/dotnet/command-line-api |
+| System.IO.Hashing | 10.0.9 | MIT | © Microsoft Corporation. All rights reserved. | https://dot.net/ |
+
+Total: 9 packages.
+
+<!-- nuget-list:end -->
 
 The .NET runtime and base class libraries linked in by the Native AOT publish
 (`Microsoft.DotNet.ILCompiler`, `Microsoft.NET.ILLink.Tasks`, and the runtime
@@ -202,8 +207,8 @@ notices for code they include.
 - **roughjs** 4.6.6 — Copyright (c) 2019 Preet Shihn
 - **safer-buffer** 2.1.2 — Copyright (c) 2018 Nikita Skovoroda <chalkerx@gmail.com>
 - **scheduler** 0.27.0 — Copyright (c) Meta Platforms, Inc. and affiliates.
-- **seroval** 1.5.4 — MIT License Copyright (c) 2025 Alexis Munsayac <alexis.munsayac@gmail.com>
-- **seroval-plugins** 1.5.4 — MIT License Copyright (c) 2025 Alexis Munsayac <alexis.munsayac@gmail.com>
+- **seroval** 1.8.2 — MIT License Copyright (c) 2025 Alexis Munsayac <alexis.munsayac@gmail.com>
+- **seroval-plugins** 1.8.0 — MIT License Copyright (c) 2025 Alexis Munsayac <alexis.munsayac@gmail.com>
 - **strictdom** 1.0.1 — Wilson Page
 - **style-mod** 4.1.3 — Copyright (C) 2018 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
 - **stylis** 4.4.0 — Copyright (c) 2016-present Sultan Tarimo
@@ -214,7 +219,7 @@ notices for code they include.
 - **util-deprecate** 1.0.2 — Copyright (c) 2014 Nathan Rajlich <nathan@tootallnate.net>
 - **uuid** 14.0.1 — Copyright (c) 2010-2020 Robert Kieffer and other contributors
 - **w3c-keyname** 2.2.8 — Copyright (C) 2016 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
-- **zod** 4.4.3 — Copyright (c) 2025 Colin McDonnell
+- **zod** 4.6.7 — Copyright (c) 2025 Colin McDonnell
 - **zustand** 5.0.14 — Copyright (c) 2019 Paul Henschel
 
 ### ISC (34)
@@ -266,7 +271,7 @@ notices for code they include.
 ### Apache-2.0 (2)
 
 - **@chevrotain/types** 11.1.2 — Shahar Soel
-- **dompurify** 3.4.16 — Dr.-Ing. Mario Heiderich, Cure53 <mario@cure53.de> (https://cure53.de/) *(dual-licensed `MPL-2.0 OR Apache-2.0`; Apache-2.0 elected)*
+- **dompurify** 3.4.18 — Dr.-Ing. Mario Heiderich, Cure53 <mario@cure53.de> (https://cure53.de/) *(dual-licensed `MPL-2.0 OR Apache-2.0`; Apache-2.0 elected)*
 
 ### 0BSD (1)
 
